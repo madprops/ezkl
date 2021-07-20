@@ -55,11 +55,7 @@ def updatefile(paths):
   file.close()
 
 def clean_path(path):
-  cpath = ""
-  if path.startswith("~"):
-    cpath = os.path.expanduser(path)
-  else:
-    cpath = os.getcwd()
+  cpath = os.getcwd()
   cpath = cpath.rstrip("/")
   return cpath
 
