@@ -55,7 +55,7 @@ def updatefile(paths):
   file.close()
 
 def clean_path(path):
-  cpath = os.getcwd()
+  cpath = os.getenv("PWD")
   cpath = cpath.rstrip("/")
   return cpath
 
