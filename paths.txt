@@ -1,3 +1,8 @@
 /home/yo/code/cc
 /home/yo/scripts
-/home/yo/code
+/usr/share
+/home/magnolia
+/home/magnolia/longer
+/home/some/magnolia
+/home/magnolius
+/home/magnus
