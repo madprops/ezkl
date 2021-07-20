@@ -3,12 +3,11 @@
 CCDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 function cc {
-  DIRPATH=$(pwd)
   builtin cd "$1" 2> /dev/null
   if [ $? -eq 0 ]; then
-    python "${CCDIR}"/cc.py 1 "$1" "$DIRPATH"
+    python3 "${CCDIR}"/cc.py 1 "$1"
   else
-    output=$(python "${CCDIR}"/cc.py 2 "$1" "$DIRPATH")
+    output=$(python3 "${CCDIR}"/cc.py 2 "$1")
     builtin cd "$output"
   fi
 }

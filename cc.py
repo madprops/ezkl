@@ -1,15 +1,17 @@
 import os 
 import sys
 import operator
+from pathlib import Path
 from difflib import SequenceMatcher
 
 mode = sys.argv[1]
 path = sys.argv[2]
-dirpath = sys.argv[3]
 thispath = os.path.dirname(os.path.realpath(__file__))
 filepath = os.path.join(thispath, "paths.txt")
 
-file = open(filepath, "a+")
+myfile = Path(filepath)
+myfile.touch(exist_ok=True)
+file = open(filepath, "r+")
 paths = file.read().split("\n")
 file.close()
 
@@ -54,12 +56,10 @@ def updatefile(paths):
 
 def clean_path(path):
   cpath = ""
-  if path.startswith("/"):
-    cpath = path
-  elif path.startswith("~"):
+  if path.startswith("~"):
     cpath = os.path.expanduser(path)
   else:
-    cpath = os.path.join(dirpath, path)
+    cpath = os.getcwd()
   cpath = cpath.rstrip("/")
   return cpath
 
