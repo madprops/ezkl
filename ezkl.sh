@@ -13,5 +13,3 @@ function cd () {
 }
 
 complete -A directory cc
-
-git remote add origin https://github.com/madprops/rigga.git
