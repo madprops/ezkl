@@ -3,11 +3,11 @@ This is meant to be a z.sh replacement that better meets my needs
 Just add this somewhere in .bashrc
 
 ```
-source /path/to/cc/cc.sh
+source /path/to/ezkl/ezkl.sh
 ```
 
-Now use cc instead of cd
+Now use cd to log and go to paths
 
-`cc /some/path`
+`cd /some/path`
 
-`cc path`
+`cd something`
