@@ -1,0 +1,3 @@
+/home/yo/code/cc
+/home/yo/scripts
+/home/yo/code
