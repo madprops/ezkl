@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CCDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+CCDIR="$( builtin cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 function cd () {
   builtin cd "$1" 2> /dev/null
