@@ -9,7 +9,7 @@ dirpath = sys.argv[3]
 thispath = os.path.dirname(os.path.realpath(__file__))
 filepath = os.path.join(thispath, "paths.txt")
 
-file = open(filepath, "r+")
+file = open(filepath, "a+")
 paths = file.read().split("\n")
 file.close()
 
@@ -50,6 +50,7 @@ def updatefile(paths):
   lines = paths[0:500]
   file = open(filepath, "w")
   file.write("\n".join(lines).strip())
+  file.close()
 
 def clean_path(path):
   cpath = ""
