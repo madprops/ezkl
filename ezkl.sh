@@ -3,7 +3,7 @@
 CCDIR="$( builtin cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 function cd () {
-  builtin cd "$1" 2> /dev/null
+  builtin cd "$@" 2> /dev/null
   if [ $? -eq 0 ]; then
     python3 "${CCDIR}"/ezkl.py 1 "$1"
   else
