@@ -35,7 +35,7 @@ def findpath(filter):
     level = 1
     for part in split:
       acc = similar(part, filter)
-      if acc >= 0.8:
+      if acc >= 0.6:
         match = {"path":path, "level":level, "acc":acc}
         matches.append(match)
       level += 1
