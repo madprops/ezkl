@@ -16,7 +16,6 @@ paths = file.read().split("\n")
 file.close()
 
 def linefilter(filter):
-  global paths
   new_paths = [filter]
 
   for path in paths:
@@ -27,7 +26,6 @@ def linefilter(filter):
   return new_paths
 
 def findpath(filter):
-  global paths
   matches = []
 
   for path in paths:
