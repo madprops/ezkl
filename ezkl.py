@@ -64,7 +64,7 @@ def findpath(filter):
     split = path.split("/")
     for part in split:
       acc = similar(part, filter)
-      if acc >= 0.6:
+      if acc >= 0.7:
         add_match(path, acc, part)
 
   if len(matches) > 0:
@@ -76,6 +76,13 @@ def findpath(filter):
           return tpath
   
   return ""
+
+def checkhome(filter):
+  dir = Path.home() / Path(filter)
+  if os.path.isdir(dir):
+    return str(dir)
+  else:
+    return ""
   
 def updatefile(paths):
   lines = paths[0:500]
@@ -94,6 +101,8 @@ if __name__ == "__main__":
   elif mode == "jump":
     p = path if path.startswith("/") \
       else findpath(path)
+    if len(p) == 0:
+      p = checkhome(path)
     if len(p) > 0:
       updatefile(filterpath(p))
       print(p)
