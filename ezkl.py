@@ -4,6 +4,10 @@ from pathlib import Path
 from difflib import SequenceMatcher
 
 args = [x for x in sys.argv[1:] if not x.startswith("-")]
+
+if len(args) != 2:
+  exit(0)
+
 mode = args[0]
 path = args[1]
 pwd = os.getenv("PWD").rstrip("/")
