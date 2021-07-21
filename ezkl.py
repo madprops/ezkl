@@ -76,11 +76,11 @@ def similar(a, b):
   return SequenceMatcher(None, a, b).ratio()
 
 if __name__ == "__main__":
-  if mode == "1":
+  if mode == "save":
     cpath = clean_path(path)
     new_paths = linefilter(cpath)
     updatefile(new_paths)
-  elif mode == "2":
+  elif mode == "jump":
     if path.startswith("-"):
       exit(0)
     elif path == "/":
