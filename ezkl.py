@@ -3,8 +3,9 @@ import sys
 from pathlib import Path
 from difflib import SequenceMatcher
 
-mode = sys.argv[1]
-path = sys.argv[2]
+args = [x for x in sys.argv[1:] if not x.startswith("-")]
+mode = args[0]
+path = args[1]
 pwd = os.getenv("PWD").rstrip("/")
 
 thispath = os.path.dirname(os.path.realpath(__file__))
@@ -15,24 +16,24 @@ paths = file.read().split("\n")
 file.close()
 
 def filterpath(filter):
-  new_paths = [filter]
+  pths = [filter]
 
   for path in paths:
     if path == filter:
       continue
-    new_paths.append(path)
+    pths.append(path)
   
-  return new_paths
+  return pths
 
 def forgetpath(filter):
-  new_paths = []
+  pths = []
 
   for path in paths:
     if path == filter or path.startswith(filter + "/"):
       continue
-    new_paths.append(path)
+    pths.append(path)
   
-  return new_paths
+  return pths
 
 def trimpaths(path, match):
   tpaths = []
@@ -83,15 +84,11 @@ def similar(a, b):
 
 if __name__ == "__main__":
   if mode == "remember":
-    new_paths = filterpath(pwd)
-    updatefile(new_paths)
+    updatefile(filterpath(pwd))
   elif mode == "forget":
-    new_paths = forgetpath(path)
-    updatefile(new_paths)
+    updatefile(forgetpath(path))
   elif mode == "jump":
-    if path.startswith("-"):
-      exit(0)
-    elif path == "/":
+    if path == "/":
       print("/")
     else:
       findpath(path)
