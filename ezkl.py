@@ -66,8 +66,6 @@ def findpath(filter, path2):
       level += 1
 
   if len(matches) > 0:
-    matches.sort(key=lambda x: len(x["path"]), reverse=False)
-    matches.sort(key=operator.itemgetter("level"), reverse=False)
     matches.sort(key=operator.itemgetter("acc"), reverse=True)
 
     for m in matches:
