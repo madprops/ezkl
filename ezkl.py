@@ -58,8 +58,9 @@ def findpath(filter):
     matches.sort(key=lambda x: len(x["path"]), reverse=False)
     matches.sort(key=operator.itemgetter("level"), reverse=False)
     matches.sort(key=operator.itemgetter("acc"), reverse=True)
-    updatefile(linefilter(matches[0]["path"]))
-    print(trimpath(matches[0]["path"], matches[0]["match"]))
+    tpath = trimpath(matches[0]["path"], matches[0]["match"])
+    updatefile(linefilter(tpath))
+    print(tpath)
   
 def updatefile(paths):
   lines = paths[0:500]
