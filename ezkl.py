@@ -48,22 +48,20 @@ def trimpaths(path, match):
 def findpath(filter, path2):
   matches = []
 
-  def add_match(path, level, acc, match):
-    match = {"path":path, "level":level, "acc":acc, "match":match}
+  def add_match(path, acc, match):
+    match = {"path":path, "acc":acc, "match":match}
     matches.append(match)
   
   checkslash = "/" in filter
 
   for path in paths:
     if checkslash and filter in path:
-      add_match(path, 1, 1, filter)
+      add_match(path, 1, filter)
     split = path.split("/")
-    level = 1
     for part in split:
       acc = similar(part, filter)
       if acc >= 0.6:
-        add_match(path, level, acc, part)
-      level += 1
+        add_match(path, acc, part)
 
   if len(matches) > 0:
     matches.sort(key=operator.itemgetter("acc"), reverse=True)
