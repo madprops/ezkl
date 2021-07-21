@@ -12,12 +12,15 @@ mode = args[0]
 path = args[1]
 pwd = os.getenv("PWD").rstrip("/")
 
-thispath = os.path.dirname(os.path.realpath(__file__))
+thispath = Path(__file__).parent.resolve()
 filepath = Path(thispath) / Path("paths.txt")
 filepath.touch(exist_ok=True)
 file = open(filepath, "r+")
 paths = file.read().split("\n")
 file.close()
+
+min_accuracy = 0.6
+max_paths = 300
 
 def filterpath(filter):
   pths = [filter]
@@ -64,7 +67,7 @@ def findpath(filter):
     split = path.split("/")
     for part in split:
       acc = similar(part, filter)
-      if acc >= 0.7:
+      if acc >= min_accuracy:
         add_match(path, acc, part)
 
   if len(matches) > 0:
@@ -91,11 +94,11 @@ def checkhome(filter):
     return dir3
   elif os.path.isdir(dir4):
     return dir4        
-
-  return ""
+  else:
+    return ""
   
 def updatefile(paths):
-  lines = paths[0:500]
+  lines = paths[0:max_paths]
   file = open(filepath, "w")
   file.write("\n".join(lines).strip())
   file.close()
