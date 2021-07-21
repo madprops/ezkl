@@ -1,6 +1,5 @@
 import os 
 import sys
-import operator
 from pathlib import Path
 from difflib import SequenceMatcher
 
@@ -64,7 +63,7 @@ def findpath(filter):
         add_match(path, acc, part)
 
   if len(matches) > 0:
-    matches.sort(key=operator.itemgetter("acc"), reverse=True)
+    matches.sort(key=lambda x: -x["acc"])
 
     for m in matches:
       for tpath in trimpaths(m["path"], m["match"]):
