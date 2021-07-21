@@ -25,26 +25,41 @@ def linefilter(filter):
   
   return new_paths
 
+def trimpath(path, match):
+  split = path.split("/")
+  parts = []
+  for part in split:
+    parts.append(part)
+    if part == match:
+      break
+  return "/".join(parts)
+
 def findpath(filter):
   matches = []
 
+  def add_match(path, level, acc, match):
+    match = {"path":path, "level":level, "acc":acc, "match":match}
+    matches.append(match)
+  
+  checkslash = "/" in filter
+
   for path in paths:
+    if checkslash and filter in path:
+      add_match(path, 1, 1, filter)
     split = path.split("/")
     level = 1
     for part in split:
       acc = similar(part, filter)
       if acc >= 0.6:
-        match = {"path":path, "level":level, "acc":acc}
-        matches.append(match)
+        add_match(path, level, acc, part)
       level += 1
 
   if len(matches) > 0:
     matches.sort(key=lambda x: len(x["path"]), reverse=False)
     matches.sort(key=operator.itemgetter("level"), reverse=False)
     matches.sort(key=operator.itemgetter("acc"), reverse=True)
-
     updatefile(linefilter(matches[0]["path"]))
-    print(matches[0]["path"])
+    print(trimpath(matches[0]["path"], matches[0]["match"]))
   
 def updatefile(paths):
   lines = paths[0:500]
@@ -66,4 +81,6 @@ if __name__ == "__main__":
     new_paths = linefilter(cpath)
     updatefile(new_paths)
   elif mode == "2":
+    if path.startswith("-"):
+      exit(0)
     findpath(path)
