@@ -67,7 +67,7 @@ def findpath(filter):
     split = path.split("/")
     for part in split:
       acc = similar(part, filter)
-      if acc >= min_accuracy:
+      if acc >= min_accuracy or filter in part:
         add_match(path, acc, part)
 
   if len(matches) > 0:
