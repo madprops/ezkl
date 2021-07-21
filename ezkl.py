@@ -29,7 +29,7 @@ def forgetpath(filter):
   new_paths = []
 
   for path in paths:
-    if path == filter or (filter + "/") in path:
+    if path == filter or path.startswith(filter + "/"):
       continue
     new_paths.append(path)
   
