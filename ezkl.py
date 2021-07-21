@@ -1,4 +1,4 @@
-import os 
+import os
 import sys
 from pathlib import Path
 from difflib import SequenceMatcher
@@ -10,7 +10,7 @@ def filterpath(filter):
     if path == filter:
       continue
     pths.append(path)
-  
+
   return pths
 
 def forgetpath(filter):
@@ -20,7 +20,7 @@ def forgetpath(filter):
     if path == filter or path.startswith(filter + "/"):
       continue
     pths.append(path)
-  
+
   return pths
 
 def trimpaths(path, match):
@@ -39,7 +39,7 @@ def findpath(filter):
   def add_match(path, acc, match):
     match = {"path":path, "acc":acc, "match":match}
     matches.append(match)
-  
+
   checkslash = "/" in filter
 
   for path in paths:
@@ -58,7 +58,7 @@ def findpath(filter):
       for tpath in trimpaths(m["path"], m["match"]):
         if tpath != pwd:
           return tpath
-  
+
   return ""
 
 def checkhome(filter):
@@ -74,10 +74,10 @@ def checkhome(filter):
   elif os.path.isdir(dir3):
     return dir3
   elif os.path.isdir(dir4):
-    return dir4        
+    return dir4
   else:
     return ""
-  
+
 def updatefile(paths):
   lines = paths[0:max_paths]
   file = open(filepath, "w")
@@ -115,7 +115,7 @@ if __name__ == "__main__":
     updatefile(forgetpath(keyword))
   elif mode == "jump":
     if keyword.startswith("/"):
-      path = cleanpath(keyword) 
+      path = cleanpath(keyword)
     else:
       path = findpath(keyword)
     if len(path) == 0:
