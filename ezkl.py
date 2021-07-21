@@ -83,4 +83,7 @@ if __name__ == "__main__":
   elif mode == "2":
     if path.startswith("-"):
       exit(0)
-    findpath(path)
+    elif path == "/":
+      print("/")
+    else:
+      findpath(path)
