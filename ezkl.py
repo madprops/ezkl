@@ -73,9 +73,9 @@ def findpath(filter):
     for m in matches:
       for tpath in trimpaths(m["path"], m["match"]):
         if tpath != pwd:
-          updatefile(filterpath(tpath))
-          print(tpath)
-          return
+          return tpath
+  
+  return ""
   
 def updatefile(paths):
   lines = paths[0:500]
@@ -92,7 +92,8 @@ if __name__ == "__main__":
   elif mode == "forget":
     updatefile(forgetpath(path))
   elif mode == "jump":
-    if path == "/":
-      print("/")
-    else:
-      findpath(path)
+    p = path if path.startswith("/") \
+      else findpath(path)
+    if len(p) > 0:
+      updatefile(filterpath(p))
+      print(p)
