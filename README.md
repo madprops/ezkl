@@ -13,3 +13,5 @@ And use z to jump to locations
 `cd /some/path`
 
 `z something`
+
+If you have z.sh stuff sourced from before you might need to start a new bash session.
