@@ -78,11 +78,21 @@ def findpath(filter):
   return ""
 
 def checkhome(filter):
-  dir = Path.home() / Path(filter)
-  if os.path.isdir(dir):
-    return str(dir)
-  else:
-    return ""
+  dir1 = str(Path.home() / Path(filter))
+  dir2 = str(Path.home() / Path(filter.capitalize()))
+  dir3 = str(Path.home() / Path(filter.lower()))
+  dir4 = str(Path.home() / Path(filter.upper()))
+
+  if os.path.isdir(dir1):
+    return dir1
+  elif os.path.isdir(dir2):
+    return dir2
+  elif os.path.isdir(dir3):
+    return dir3
+  elif os.path.isdir(dir4):
+    return dir4        
+
+  return ""
   
 def updatefile(paths):
   lines = paths[0:500]
