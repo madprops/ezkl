@@ -6,16 +6,17 @@ from difflib import SequenceMatcher
 
 mode = sys.argv[1]
 path = sys.argv[2]
+pwd = os.getenv("PWD").rstrip("/")
+
 thispath = os.path.dirname(os.path.realpath(__file__))
 filepath = os.path.join(thispath, "paths.txt")
-
 myfile = Path(filepath)
 myfile.touch(exist_ok=True)
 file = open(filepath, "r+")
 paths = file.read().split("\n")
 file.close()
 
-def linefilter(filter):
+def filterpath(filter):
   new_paths = [filter]
 
   for path in paths:
@@ -45,7 +46,7 @@ def trimpaths(path, match):
       tpaths.append("/".join(parts))
   return tpaths
 
-def findpath(filter, path2):
+def findpath(filter):
   matches = []
 
   def add_match(path, acc, match):
@@ -68,8 +69,8 @@ def findpath(filter, path2):
 
     for m in matches:
       for tpath in trimpaths(m["path"], m["match"]):
-        if tpath != path2:
-          updatefile(linefilter(tpath))
+        if tpath != pwd:
+          updatefile(filterpath(tpath))
           print(tpath)
           return
   
@@ -79,18 +80,12 @@ def updatefile(paths):
   file.write("\n".join(lines).strip())
   file.close()
 
-def clean_path(path):
-  cpath = os.getenv("PWD")
-  cpath = cpath.rstrip("/").strip()
-  return cpath
-
 def similar(a, b):
   return SequenceMatcher(None, a, b).ratio()
 
 if __name__ == "__main__":
-  path2 = clean_path(path)
   if mode == "remember":
-    new_paths = linefilter(path2)
+    new_paths = filterpath(pwd)
     updatefile(new_paths)
   elif mode == "forget":
     new_paths = forgetpath(path)
@@ -101,4 +96,4 @@ if __name__ == "__main__":
     elif path == "/":
       print("/")
     else:
-      findpath(path, path2)
+      findpath(path)
