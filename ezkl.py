@@ -9,9 +9,8 @@ path = sys.argv[2]
 pwd = os.getenv("PWD").rstrip("/")
 
 thispath = os.path.dirname(os.path.realpath(__file__))
-filepath = os.path.join(thispath, "paths.txt")
-myfile = Path(filepath)
-myfile.touch(exist_ok=True)
+filepath = Path(thispath) / Path("paths.txt")
+filepath.touch(exist_ok=True)
 file = open(filepath, "r+")
 paths = file.read().split("\n")
 file.close()
