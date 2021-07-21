@@ -25,16 +25,27 @@ def linefilter(filter):
   
   return new_paths
 
-def trimpath(path, match):
+def forgetpath(filter):
+  new_paths = []
+
+  for path in paths:
+    if path == filter or (filter + "/") in path:
+      continue
+    new_paths.append(path)
+  
+  return new_paths
+
+def trimpaths(path, match):
+  tpaths = []
   split = path.split("/")
   parts = []
   for part in split:
     parts.append(part)
     if part == match:
-      break
-  return "/".join(parts)
+      tpaths.append("/".join(parts))
+  return tpaths
 
-def findpath(filter):
+def findpath(filter, path2):
   matches = []
 
   def add_match(path, level, acc, match):
@@ -58,9 +69,13 @@ def findpath(filter):
     matches.sort(key=lambda x: len(x["path"]), reverse=False)
     matches.sort(key=operator.itemgetter("level"), reverse=False)
     matches.sort(key=operator.itemgetter("acc"), reverse=True)
-    tpath = trimpath(matches[0]["path"], matches[0]["match"])
-    updatefile(linefilter(tpath))
-    print(tpath)
+
+    for m in matches:
+      for tpath in trimpaths(m["path"], m["match"]):
+        if tpath != path2:
+          updatefile(linefilter(tpath))
+          print(tpath)
+          return
   
 def updatefile(paths):
   lines = paths[0:500]
@@ -70,16 +85,19 @@ def updatefile(paths):
 
 def clean_path(path):
   cpath = os.getenv("PWD")
-  cpath = cpath.rstrip("/")
+  cpath = cpath.rstrip("/").strip()
   return cpath
 
 def similar(a, b):
   return SequenceMatcher(None, a, b).ratio()
 
 if __name__ == "__main__":
-  if mode == "save":
-    cpath = clean_path(path)
-    new_paths = linefilter(cpath)
+  path2 = clean_path(path)
+  if mode == "remember":
+    new_paths = linefilter(path2)
+    updatefile(new_paths)
+  elif mode == "forget":
+    new_paths = forgetpath(path)
     updatefile(new_paths)
   elif mode == "jump":
     if path.startswith("-"):
@@ -87,4 +105,4 @@ if __name__ == "__main__":
     elif path == "/":
       print("/")
     else:
-      findpath(path)
+      findpath(path, path2)
