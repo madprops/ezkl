@@ -8,6 +8,31 @@ from os import getenv
 from pathlib import Path
 from difflib import SequenceMatcher
 
+# Main function
+def main():
+  getargs()
+  getpaths()
+
+  if mode == "info":
+    showinfo()
+
+  elif mode == "remember":
+    updatefile(filterpath(pwd))
+
+  elif mode == "forget":
+    updatefile(forgetpath(keyword))
+
+  elif mode == "jump":
+    if keyword.startswith("/"):
+      path = cleanpath(keyword)
+    else:
+      path = findpath(keyword)
+    if len(path) == 0:
+      path = checkhome(keyword)
+    if len(path) > 0:
+      updatefile(filterpath(path))
+      print(path)
+
 # Put path in first line
 def filterpath(path):
   pths = [path]
@@ -138,26 +163,4 @@ def getpaths():
   pwd = cleanpath(getenv("PWD"))
 
 # Program starts here
-if __name__ == "__main__":
-  getargs()
-  getpaths()
-
-  if mode == "info":
-    showinfo()
-
-  elif mode == "remember":
-    updatefile(filterpath(pwd))
-
-  elif mode == "forget":
-    updatefile(forgetpath(keyword))
-
-  elif mode == "jump":
-    if keyword.startswith("/"):
-      path = cleanpath(keyword)
-    else:
-      path = findpath(keyword)
-    if len(path) == 0:
-      path = checkhome(keyword)
-    if len(path) > 0:
-      updatefile(filterpath(path))
-      print(path)
+if __name__ == "__main__": main()
