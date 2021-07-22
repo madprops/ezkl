@@ -101,9 +101,7 @@ if __name__ == "__main__":
     exit(0)
   
   keyword = args[1]
-
   pwd = cleanpath(getenv("PWD"))
-
   thispath = Path(__file__).parent.resolve()
   filepath = Path(thispath) / Path("paths.txt")
   filepath.touch(exist_ok=True)
