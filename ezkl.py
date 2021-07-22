@@ -89,7 +89,9 @@ Paths are saved in ezkl/paths.txt
 If you don't need this anymore remove, ezkl from ~/.bashrc
 Remember to restart Bash for changes to apply
 ---------------------------------------------
-paths.txt has {len(paths)} paths saved\n"""
+Minimum accuracy is set to {min_accuracy}
+paths.txt has {len(paths)}/{max_paths} paths saved
+\n"""
   print(info)
 
 def getpaths():
