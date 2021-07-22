@@ -91,14 +91,17 @@ Remember to source ~/.bashrc for changes to apply\n"""
 if __name__ == "__main__":
   args = [x for x in argv[1:] if not x.startswith("-")]
 
-  mode = args[0]
-  if len(mode) == 0:
-    exit(0)
+  if len(args) >= 1:
+    mode = args[0]
+    if len(mode) == 0:
+      exit(0)
+    if mode == "info":
+      showinfo()
+      exit(0)
+    else:
+      if len(args) < 2:
+        exit(0)
   
-  if mode == "info":
-    showinfo()
-    exit(0)
-
   keyword = args[1]
   if len(keyword) == 0:
     exit(0)
