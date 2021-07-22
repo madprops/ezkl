@@ -10,8 +10,8 @@ from difflib import SequenceMatcher
 
 # Main function
 def main():
-  getargs()
   getpaths()
+  getargs()
 
   if mode == "info":
     showinfo()
@@ -28,7 +28,7 @@ def main():
     else:
       path = findpath(keyword)
     if len(path) == 0:
-      path = checkhome(keyword)
+      path = guessdir(keyword)
     if len(path) > 0:
       updatefile(filterpath(path))
       print(path)
@@ -121,16 +121,30 @@ def findpath(filter):
 
   return ""
 
-# Check if path or similar exist in home
-def checkhome(p):
-  for s in [p, p.capitalize(), p.lower(), p.upper()]:
-    dir = Path.home() / Path(s)
+# Check if path or similar exists in directory
+# It checks current directory and then home
+def guessdir(p):
+  pths = [p, p.capitalize(), p.lower(), p.upper()]
+
+  for s in pths:
+    dir = Path(pwd) / Path(s)
     if dir.is_dir():
       return str(dir)
 
-    dotdir = Path.home() / Path("." + s)
+    dotdir = Path(pwd) / Path("." + s)
     if dotdir.is_dir():
       return str(dotdir)
+
+  if not athome():
+    for s in pths:
+      dir = Path.home() / Path(s)
+      if dir.is_dir():
+        return str(dir)
+
+      dotdir = Path.home() / Path("." + s)
+      if dotdir.is_dir():
+        return str(dotdir)
+
   return ""
 
 # Write paths to file
@@ -147,6 +161,10 @@ def similar(a, b):
 # Remove unecessary characters
 def cleanpath(path):
   return path.rstrip("/")
+
+# Check if pwd is set to home
+def athome():
+  return Path(pwd) == Path(Path.home())
 
 # Show some information
 def showinfo():
