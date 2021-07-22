@@ -97,9 +97,24 @@ Minimum accuracy is set to {min_accuracy}
 paths.txt has {len(paths)}/{max_paths} paths saved\n"""
   print(info)
 
+def getargs():
+  global mode
+  global keyword
+
+  args = [x for x in argv[1:] if not x.startswith("-")]
+  mode = args[0] if len(args) > 0 else ""
+  keyword = args[1] if len(args) > 1 else ""
+
+  if mode not in ["remember", "forget", "jump", "info"]:
+    exit(0)
+
+  if mode != "info" and keyword == "":
+    exit(0)
+
 def getpaths():
   global paths
   global filepath
+  global pwd
   thispath = Path(__file__).parent.resolve()
   filepath = Path(thispath) / Path("paths.txt")
   filepath.touch(exist_ok=True)
@@ -108,31 +123,15 @@ def getpaths():
   paths = list(map(str.strip, paths))
   paths = list(filter(None, paths))
   file.close()
-
-def getargs():
-  global mode
-  global keyword
-  args = [x for x in argv[1:] if not x.startswith("-")]
-  mode = args[0] if len(args) > 0 else ""
-  keyword = args[1] if len(args) > 1 else ""
+  pwd = cleanpath(getenv("PWD"))
 
 if __name__ == "__main__":
-  modes = ["remember", "forget", "jump", "info"]
-
   getargs()
-
-  if mode not in modes:
-    exit(0)
-
   getpaths()
 
   if mode == "info":
     showinfo()
     exit(0)
-  elif keyword == "":
-    exit(0)
-
-  pwd = cleanpath(getenv("PWD"))
 
   if mode == "remember":
     updatefile(filterpath(pwd))
