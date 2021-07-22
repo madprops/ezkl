@@ -90,8 +90,7 @@ If you don't need this anymore remove, ezkl from ~/.bashrc
 Remember to restart Bash for changes to apply
 ---------------------------------------------
 Minimum accuracy is set to {min_accuracy}
-paths.txt has {len(paths)}/{max_paths} paths saved
-\n"""
+paths.txt has {len(paths)}/{max_paths} paths saved\n"""
   print(info)
 
 def getpaths():
