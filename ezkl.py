@@ -1,11 +1,14 @@
+# Settings
 min_accuracy = 0.6
 max_paths = 300
 
+# Imports
 from sys import argv
 from os import getenv
 from pathlib import Path
 from difflib import SequenceMatcher
 
+# Put path in first line
 def filterpath(path):
   pths = [path]
 
@@ -16,6 +19,7 @@ def filterpath(path):
 
   return pths
 
+# Remove path and subdirs
 def forgetpath(path):
   pths = []
 
@@ -26,6 +30,7 @@ def forgetpath(path):
 
   return pths
 
+# Try to find a matching path
 def findpath(filter):
   matches = []
 
@@ -61,6 +66,7 @@ def findpath(filter):
 
   return ""
 
+# Check if path or similar exist in home
 def checkhome(p):
   for s in [p, p.capitalize(), p.lower(), p.upper()]:
     dir = Path.home() / Path(s)
@@ -72,18 +78,22 @@ def checkhome(p):
       return str(dotdir)
   return ""
 
+# Write paths to file
 def updatefile(paths):
   lines = paths[0:max_paths]
   file = open(filepath, "w")
   file.write("\n".join(lines).strip())
   file.close()
 
+# Check string similarity from 0 to 1
 def similar(a, b):
   return SequenceMatcher(None, a, b).ratio()
 
+# Remove unecessary characters
 def cleanpath(path):
   return path.rstrip("/")
 
+# Show some information
 def showinfo():
   info = f"""\nezkl is installed and ready to use
 ---------------------------------------------
@@ -97,6 +107,7 @@ Minimum accuracy is set to {min_accuracy}
 paths.txt has {len(paths)}/{max_paths} paths saved\n"""
   print(info)
 
+# Get arguments. Might exit here
 def getargs():
   global mode
   global keyword
@@ -111,6 +122,7 @@ def getargs():
   if mode != "info" and keyword == "":
     exit(0)
 
+# Read the paths file plus other paths
 def getpaths():
   global paths
   global filepath
@@ -125,6 +137,7 @@ def getpaths():
   file.close()
   pwd = cleanpath(getenv("PWD"))
 
+# Program starts here
 if __name__ == "__main__":
   getargs()
   getpaths()
