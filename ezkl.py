@@ -1,5 +1,5 @@
-import os
-import sys
+from sys import argv
+from os import getenv
 from pathlib import Path
 from difflib import SequenceMatcher
 
@@ -81,14 +81,14 @@ def cleanpath(path):
   return path.rstrip("/")
 
 if __name__ == "__main__":
-  args = [x for x in sys.argv[1:] if not x.startswith("-")]
+  args = [x for x in argv[1:] if not x.startswith("-")]
 
   if len(args) != 2:
     exit(0)
 
   mode = args[0]
   keyword = args[1]
-  pwd = cleanpath(os.getenv("PWD"))
+  pwd = cleanpath(getenv("PWD"))
   min_accuracy = 0.6
   max_paths = 300
 
