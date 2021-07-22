@@ -6,23 +6,23 @@ from os import getenv
 from pathlib import Path
 from difflib import SequenceMatcher
 
-def filterpath(filter):
-  pths = [filter]
+def filterpath(path):
+  pths = [path]
 
-  for path in paths:
-    if path == filter:
+  for p in paths:
+    if p == path:
       continue
-    pths.append(path)
+    pths.append(p)
 
   return pths
 
-def forgetpath(filter):
+def forgetpath(path):
   pths = []
 
-  for path in paths:
-    if path == filter or path.startswith(filter + "/"):
+  for p in paths:
+    if p == path or p.startswith(path + "/"):
       continue
-    pths.append(path)
+    pths.append(p)
 
   return pths
 
