@@ -1,3 +1,6 @@
+min_accuracy = 0.6
+max_paths = 300
+
 from sys import argv
 from os import getenv
 from pathlib import Path
@@ -48,7 +51,7 @@ def findpath(filter):
       acc = similar(part, filter)
       if acc >= min_accuracy or lowfilter in lowpart:
         add_match("/".join(parts), acc, part)
-  
+
   if len(matches) > 0:
     matches.sort(key=lambda x: -x["acc"])
 
@@ -86,8 +89,6 @@ if __name__ == "__main__":
   mode = args[0]
   keyword = args[1]
   pwd = cleanpath(getenv("PWD"))
-  min_accuracy = 0.6
-  max_paths = 300
 
   thispath = Path(__file__).parent.resolve()
   filepath = Path(thispath) / Path("paths.txt")
