@@ -124,7 +124,7 @@ def findpath(filter):
 # Check if path or similar exists in directory
 # It checks current directory and then home
 def guessdir(p):
-  pths = [p, p.capitalize(), p.lower(), p.upper(), "." + p]
+  pths = [p, p.capitalize(), p.lower(), p.upper(), f".{p}"]
 
   for s in pths:
     dir = Path(pwd) / Path(s)
