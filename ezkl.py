@@ -131,9 +131,8 @@ if __name__ == "__main__":
 
   if mode == "info":
     showinfo()
-    exit(0)
 
-  if mode == "remember":
+  elif mode == "remember":
     updatefile(filterpath(pwd))
 
   elif mode == "forget":
