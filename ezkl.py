@@ -63,9 +63,9 @@ def findpath(filter):
 
 def checkhome(p):
   for s in [p, p.capitalize(), p.lower(), p.upper()]:
-    dir = str(Path.home() / Path(s))
-    if os.path.isdir(dir):
-      return dir
+    dir = Path.home() / Path(s)
+    if dir.is_dir():
+      return str(dir)
   return ""
 
 def updatefile(paths):
