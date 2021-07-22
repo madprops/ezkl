@@ -101,6 +101,8 @@ def getpaths():
   filepath.touch(exist_ok=True)
   file = open(filepath, "r")
   paths = file.read().split("\n")
+  paths = list(map(str.strip, paths))
+  paths = list(filter(None, paths))
   file.close()
 
 if __name__ == "__main__":
