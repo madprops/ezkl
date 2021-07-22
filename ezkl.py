@@ -93,8 +93,6 @@ if __name__ == "__main__":
 
   if len(args) >= 1:
     mode = args[0]
-    if len(mode) == 0:
-      exit(0)
     if mode == "info":
       showinfo()
       exit(0)
@@ -103,8 +101,6 @@ if __name__ == "__main__":
     exit(0)
   
   keyword = args[1]
-  if len(keyword) == 0:
-    exit(0)
 
   pwd = cleanpath(getenv("PWD"))
 
