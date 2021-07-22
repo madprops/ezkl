@@ -1,6 +1,6 @@
 # Settings
-min_accuracy = 0.6
-max_paths = 300
+min_accuracy = 0.7
+max_paths = 250
 
 # Imports
 from sys import argv
@@ -130,7 +130,6 @@ def guessdir(p):
     dir = Path(pwd) / Path(s)
     if dir.is_dir():
       return str(dir)
-
     dotdir = Path(pwd) / Path("." + s)
     if dotdir.is_dir():
       return str(dotdir)
@@ -140,7 +139,6 @@ def guessdir(p):
       dir = Path.home() / Path(s)
       if dir.is_dir():
         return str(dir)
-
       dotdir = Path.home() / Path("." + s)
       if dotdir.is_dir():
         return str(dotdir)
