@@ -66,6 +66,10 @@ def checkhome(p):
     dir = Path.home() / Path(s)
     if dir.is_dir():
       return str(dir)
+
+    dotdir = Path.home() / Path("." + s)
+    if dotdir.is_dir():
+      return str(dotdir)
   return ""
 
 def updatefile(paths):
@@ -114,9 +118,9 @@ def getargs():
 
 if __name__ == "__main__":
   modes = ["remember", "forget", "jump", "info"]
-  
+
   getargs()
-  
+
   if mode not in modes:
     exit(0)
 
@@ -135,7 +139,7 @@ if __name__ == "__main__":
 
   elif mode == "forget":
     updatefile(forgetpath(keyword))
-    
+
   elif mode == "jump":
     if keyword.startswith("/"):
       path = cleanpath(keyword)
