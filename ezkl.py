@@ -23,41 +23,38 @@ def forgetpath(filter):
 
   return pths
 
-def trimpaths(path, match):
-  tpaths = []
-  split = path.split("/")
-  parts = []
-  for part in split:
-    parts.append(part)
-    if part == match:
-      tpaths.append("/".join(parts))
-  return tpaths
-
 def findpath(filter):
   matches = []
 
   def add_match(path, acc, match):
+    for m in matches:
+      if m["path"] == path:
+        return
     match = {"path":path, "acc":acc, "match":match}
     matches.append(match)
 
   checkslash = "/" in filter
+  lowfilter = filter.lower()
 
   for path in paths:
-    if checkslash and filter in path:
+    lowpath = path.lower()
+    if checkslash and lowfilter in lowpath:
       add_match(path, 1, filter)
     split = path.split("/")
+    parts = []
     for part in split:
+      parts.append(part)
+      lowpart = part.lower()
       acc = similar(part, filter)
-      if acc >= min_accuracy or filter in part:
-        add_match(path, acc, part)
-
+      if acc >= min_accuracy or lowfilter in lowpart:
+        add_match("/".join(parts), acc, part)
+  
   if len(matches) > 0:
     matches.sort(key=lambda x: -x["acc"])
 
     for m in matches:
-      for tpath in trimpaths(m["path"], m["match"]):
-        if tpath != pwd:
-          return tpath
+      if m["path"] != pwd:
+        return m["path"]
 
   return ""
 
