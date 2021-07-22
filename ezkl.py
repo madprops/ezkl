@@ -95,7 +95,7 @@ if __name__ == "__main__":
   thispath = Path(__file__).parent.resolve()
   filepath = Path(thispath) / Path("paths.txt")
   filepath.touch(exist_ok=True)
-  file = open(filepath, "r+")
+  file = open(filepath, "r")
   paths = file.read().split("\n")
   file.close()
 
