@@ -80,14 +80,29 @@ def similar(a, b):
 def cleanpath(path):
   return path.rstrip("/")
 
+def showinfo():
+  info = """\nJump around directories. For instance 'z music'
+Directories get remembered by using cd normally
+Paths are saved in ezkl/paths.txt
+If you don't need this anymore remove, ezkl from ~/.bashrc
+Remember to source ~/.bashrc for changes to apply\n"""
+  print(info)
+
 if __name__ == "__main__":
   args = [x for x in argv[1:] if not x.startswith("-")]
 
-  if len(args) != 2:
+  mode = args[0]
+  if len(mode) == 0:
+    exit(0)
+  
+  if mode == "info":
+    showinfo()
     exit(0)
 
-  mode = args[0]
   keyword = args[1]
+  if len(keyword) == 0:
+    exit(0)
+
   pwd = cleanpath(getenv("PWD"))
 
   thispath = Path(__file__).parent.resolve()
