@@ -105,27 +105,37 @@ def getpaths():
   paths = list(filter(None, paths))
   file.close()
 
-if __name__ == "__main__":
+def getargs():
+  global mode
+  global keyword
   args = [x for x in argv[1:] if not x.startswith("-")]
+  mode = args[0] if len(args) > 0 else ""
+  keyword = args[1] if len(args) > 1 else ""
 
-  if len(args) >= 1:
-    mode = args[0]
-    if mode == "info":
-      getpaths()
-      showinfo()
-      exit(0)
-
-  if len(args) < 2:
+if __name__ == "__main__":
+  modes = ["remember", "forget", "jump", "info"]
+  
+  getargs()
+  
+  if mode not in modes:
     exit(0)
 
   getpaths()
-  keyword = args[1]
+
+  if mode == "info":
+    showinfo()
+    exit(0)
+  elif keyword == "":
+    exit(0)
+
   pwd = cleanpath(getenv("PWD"))
 
   if mode == "remember":
     updatefile(filterpath(pwd))
+
   elif mode == "forget":
     updatefile(forgetpath(keyword))
+    
   elif mode == "jump":
     if keyword.startswith("/"):
       path = cleanpath(keyword)
