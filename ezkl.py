@@ -98,9 +98,9 @@ if __name__ == "__main__":
     if mode == "info":
       showinfo()
       exit(0)
-    else:
-      if len(args) < 2:
-        exit(0)
+  
+  if len(args) < 2:
+    exit(0)
   
   keyword = args[1]
   if len(keyword) == 0:
