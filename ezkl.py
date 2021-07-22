@@ -85,7 +85,7 @@ def showinfo():
 Directories get remembered by using cd normally
 Paths are saved in ezkl/paths.txt
 If you don't need this anymore remove, ezkl from ~/.bashrc
-Remember to source ~/.bashrc for changes to apply\n"""
+Remember to restart Bash for changes to apply\n"""
   print(info)
 
 if __name__ == "__main__":
@@ -96,10 +96,10 @@ if __name__ == "__main__":
     if mode == "info":
       showinfo()
       exit(0)
-  
+
   if len(args) < 2:
     exit(0)
-  
+
   keyword = args[1]
   pwd = cleanpath(getenv("PWD"))
   thispath = Path(__file__).parent.resolve()
