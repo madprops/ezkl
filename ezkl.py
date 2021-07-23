@@ -10,8 +10,8 @@ from difflib import SequenceMatcher
 
 # Main function
 def main():
-  getpaths()
   getargs()
+  getpaths()
 
   if mode == "info":
     showinfo()
