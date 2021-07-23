@@ -28,14 +28,26 @@ function z () {
     else
       # Else find a path to jump to
       output=$(python3 "${CCDIR}"/ezkl.py jump "$1")
-      # cd to the response
-      builtin cd "$output"
-      if [ $? -eq 0 ]; then
-        :
-      else
-        # If cd was not ok then forget the path
-        python3 "${CCDIR}"/ezkl.py forget "$output"
-      fi
+      while IFS= read -r line; do
+        # If output starts with slash...
+        # This means it's a path
+        if [[ "$line" == "/"* ]]; then
+          # cd to the response
+          builtin cd "$line"
+          if [ $? -eq 0 ]; then
+            :
+          else
+            # If cd was not ok then forget the path
+            python3 "${CCDIR}"/ezkl.py forget "$line"
+          fi
+        else
+          if [ -z "$line" ]; then
+            :
+          else
+            echo "$line"
+          fi
+        fi
+      done <<< "$output"
     fi
   fi
 }

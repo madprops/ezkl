@@ -5,17 +5,6 @@ from typing import List
 from pathlib import Path
 from difflib import SequenceMatcher
 
-# Settings
-min_accuracy: float = 0.7
-max_paths: int = 250
-
-# Globals
-mode: str
-keyword: str
-paths: List[str]
-filepath: Path
-pwd: str
-
 # Matched paths and their accuracy
 class Match:
   def __init__(self, path: str, acc: float):
@@ -24,6 +13,17 @@ class Match:
 
   def level(self) -> int:
     return len(self.path.split("/"))
+
+# Settings
+min_accuracy: float = 0.66
+max_paths: int = 250
+
+# Globals
+mode: str
+keyword: str
+paths: List[str]
+filepath: Path
+pwd: str
 
 # Main function
 def main() -> None:
@@ -43,12 +43,25 @@ def main() -> None:
     showpaths(keyword)
 
   elif mode == "jump":
+    path = ""
+    matches: List[Match] = []
+
     if keyword.startswith("/"):
       path = cleanpath(keyword)
+      
     else:
-      path = findpath(keyword)
+      matches = getmatches(keyword)
+      if len(matches) > 0:
+        if matches[0].path != pwd:
+          path = matches[0].path  
+
     if len(path) == 0:
       path = guessdir(keyword)
+
+    for m in matches:
+      if m.path != pwd and m.path != path:
+        suggestpath(m.path) 
+
     if len(path) > 0:
       updatefile(filterpath(path))
       print(path)
@@ -106,10 +119,13 @@ def forgetpath(path: str) -> List[str]:
   return pths
 
 # Try to find a matching path
-def findpath(filter: str) -> str:
+def getmatches(filter: str) -> List[Match]:
   matches: List[Match] = []
 
   def add_match(path: str, acc: float) -> None:
+    for match in matches:
+      if match.path == path:
+        return
     match: Match = Match(path, acc)
     matches.append(match)
 
@@ -129,11 +145,8 @@ def findpath(filter: str) -> str:
       if acc >= min_accuracy or lowfilter in lowpart:
         add_match("/".join(parts), acc)
 
-  if len(matches) > 0:
-    matches.sort(key=lambda x: (-x.acc, x.level()))
-    return matches[0].path
-
-  return ""
+  matches.sort(key=lambda x: (-x.acc, x.level()))
+  return matches
 
 # Check if path or similar exists in directory
 # It checks current directory and then home
@@ -167,6 +180,10 @@ def similar(a: str, b: str) -> float:
 # Remove unecessary characters
 def cleanpath(path: str) -> str:
   return path.rstrip("/")
+
+# Print a path suggestion
+def suggestpath(path: str) -> None:
+  print(f"[Suggestion] {path}")
 
 # Check if pwd is set to home
 def athome() -> bool:
