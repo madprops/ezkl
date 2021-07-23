@@ -13,10 +13,7 @@ def main():
   getpaths()
   getargs()
 
-  if mode == "--paths":
-    showpaths(keyword)
-
-  elif mode == "info":
+  if mode == "info":
     showinfo()
 
   elif mode == "remember":
@@ -24,6 +21,9 @@ def main():
 
   elif mode == "forget":
     updatefile(forgetpath(keyword))
+  
+  elif mode == "paths":
+    showpaths(keyword)
 
   elif mode == "jump":
     if keyword.startswith("/"):
@@ -45,10 +45,10 @@ def getargs():
   mode = args[0] if len(args) > 0 else ""
   keyword = args[1] if len(args) > 1 else ""
 
-  if mode not in ["--paths", "remember", "forget", "jump", "info"]:
+  if mode not in ["remember", "forget", "jump", "info", "paths"]:
     exit(0)
 
-  if mode not in ["--paths", "info"] and keyword == "":
+  if mode not in ["info", "paths"] and keyword == "":
     exit(0)
 
 # Read the paths file plus other paths

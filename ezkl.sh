@@ -21,11 +21,12 @@ function z () {
   if [ -z "$1" ]; then
     python3 "${CCDIR}"/ezkl.py info
   else
-    # Check if argument starts with --
-    if [[ "$1" == "--"* ]]; then
-      python3 "${CCDIR}"/ezkl.py "$@"
+    # Show paths if command is --paths
+    # Second argument is used as filter
+    if [[ "$1" == "--paths" ]]; then
+      python3 "${CCDIR}"/ezkl.py paths "$2"
     else
-      # Find a path to jump to
+      # Else find a path to jump to
       output=$(python3 "${CCDIR}"/ezkl.py jump "$1")
       # cd to the response
       builtin cd "$output"
