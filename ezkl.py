@@ -111,7 +111,7 @@ def findpath(filter):
     for part in split:
       parts.append(part)
       lowpart = part.lower()
-      acc = similar(part, filter)
+      acc = similar(lowpart, lowfilter)
       if acc >= min_accuracy or lowfilter in lowpart:
         add_match("/".join(parts), acc)
 
@@ -119,8 +119,7 @@ def findpath(filter):
     matches.sort(key=lambda x: (-x["acc"], len(x["path"].split("/"))))
 
     for m in matches:
-      if m["path"] != pwd:
-        return m["path"]
+      return m["path"]
 
   return ""
 
