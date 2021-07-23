@@ -1,6 +1,7 @@
 # Imports
 from sys import argv
 from os import getenv
+from typing import List
 from pathlib import Path
 from difflib import SequenceMatcher
 
@@ -11,7 +12,7 @@ max_paths: int = 250
 # Globals
 mode: str
 keyword: str
-paths: "list[str]"
+paths: List[str]
 filepath: Path
 pwd: str
 
@@ -74,7 +75,7 @@ def getpaths() -> None:
   pwd = cleanpath(str(getenv("PWD")))
 
 # Put path in first line
-def filterpath(path: str) -> "list[str]":
+def filterpath(path: str) -> List[str]:
   pths = [path]
 
   for p in paths:
@@ -85,8 +86,8 @@ def filterpath(path: str) -> "list[str]":
   return pths
 
 # Remove path and subdirs
-def forgetpath(path: str) -> "list[str]":
-  pths: list[str] = []
+def forgetpath(path: str) -> List[str]:
+  pths: List[str] = []
 
   for p in paths:
     if p == path or p.startswith(path + "/"):
@@ -105,9 +106,9 @@ class Match:
 
 # Try to find a matching path
 def findpath(filter: str) -> str:
-  matches: list[Match] = []
+  matches: List[Match] = []
 
-  def add_match(path: str, acc: float):
+  def add_match(path: str, acc: float) -> None:
     match: Match = Match(path, acc)
     matches.append(match)
 
@@ -119,7 +120,7 @@ def findpath(filter: str) -> str:
     if checkslash and lowfilter in lowpath:
       add_match(path, 1)
     split = path.split("/")
-    parts: list[str] = []
+    parts: List[str] = []
     for part in split:
       parts.append(part)
       lowpart = part.lower()
@@ -152,8 +153,8 @@ def guessdir(p: str) -> str:
   return ""
 
 # Write paths to file
-def updatefile(paths: "list[str]") -> None:
-  lines: list[str] = paths[0:max_paths]
+def updatefile(paths: List[str]) -> None:
+  lines: List[str] = paths[0:max_paths]
   file = open(filepath, "w")
   file.write("\n".join(lines).strip())
   file.close()
