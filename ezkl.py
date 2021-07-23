@@ -48,19 +48,20 @@ def main() -> None:
 
     if keyword.startswith("/"):
       path = cleanpath(keyword)
-      
+
     else:
       matches = getmatches(keyword)
       if len(matches) > 0:
         if matches[0].path != pwd:
-          path = matches[0].path  
+          path = matches[0].path
 
     if len(path) == 0:
       path = guessdir(keyword)
 
     for m in matches:
       if m.path != pwd and m.path != path:
-        suggestpath(m.path) 
+        if not path.startswith(m.path) and not m.path.startswith(path):
+          suggestpath(m.path)
 
     if len(path) > 0:
       updatefile(filterpath(path))
@@ -183,7 +184,9 @@ def cleanpath(path: str) -> str:
 
 # Print a path suggestion
 def suggestpath(path: str) -> None:
-  print(f"[Suggestion] {path}")
+  CRED = "\033[92m"
+  CEND = "\033[0m"
+  print(f"{CRED}[Suggestion]{CEND} {path}")
 
 # Check if pwd is set to home
 def athome() -> bool:
