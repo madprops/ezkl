@@ -16,6 +16,15 @@ paths: List[str]
 filepath: Path
 pwd: str
 
+# Matched paths and their accuracy
+class Match:
+  def __init__(self, path: str, acc: float):
+    self.path = path
+    self.acc = acc
+
+  def level(self) -> int:
+    return len(self.path.split("/"))
+
 # Main function
 def main() -> None:
   getargs()
@@ -29,7 +38,7 @@ def main() -> None:
 
   elif mode == "forget":
     updatefile(forgetpath(keyword))
-  
+
   elif mode == "paths":
     showpaths(keyword)
 
@@ -95,14 +104,6 @@ def forgetpath(path: str) -> List[str]:
     pths.append(p)
 
   return pths
-
-class Match:
-  def __init__(self, path: str, acc: float):
-    self.path = path
-    self.acc = acc
-  
-  def level(self) -> int:
-    return len(self.path.split("/"))
 
 # Try to find a matching path
 def findpath(filter: str) -> str:
