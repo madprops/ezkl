@@ -8,7 +8,7 @@ function cd () {
   builtin cd "$@"
   if [ $? -eq 0 ]; then
     # If cd was ok then save the path
-    python3 "${CCDIR}"/ezkl.py remember "$@"
+    python3 "${CCDIR}"/ezkl.py remember
   else
     :
   fi

@@ -48,7 +48,7 @@ def getargs():
   if mode not in ["remember", "forget", "jump", "info", "paths"]:
     exit(0)
 
-  if mode not in ["info", "paths"] and keyword == "":
+  if mode in ["forget", "jump"] and keyword == "":
     exit(0)
 
 # Read the paths file plus other paths
