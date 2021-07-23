@@ -117,9 +117,7 @@ def findpath(filter):
 
   if len(matches) > 0:
     matches.sort(key=lambda x: (-x["acc"], len(x["path"].split("/"))))
-
-    for m in matches:
-      return m["path"]
+    return matches[0]["path"]
 
   return ""
 
