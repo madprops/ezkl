@@ -1,12 +1,19 @@
-# Settings
-min_accuracy = 0.7
-max_paths = 250
-
 # Imports
 from sys import argv
 from os import getenv
 from pathlib import Path
 from difflib import SequenceMatcher
+
+# Settings
+min_accuracy: float = 0.7
+max_paths: int = 250
+
+# Globals
+mode: str
+keyword: str
+paths: "list[str]"
+filepath: Path
+pwd: str
 
 # Main function
 def main() -> None:
@@ -67,7 +74,7 @@ def getpaths() -> None:
   pwd = cleanpath(str(getenv("PWD")))
 
 # Put path in first line
-def filterpath(path: str) -> list:
+def filterpath(path: str) -> "list[str]":
   pths = [path]
 
   for p in paths:
@@ -78,8 +85,8 @@ def filterpath(path: str) -> list:
   return pths
 
 # Remove path and subdirs
-def forgetpath(path: str) -> list:
-  pths = []
+def forgetpath(path: str) -> "list[str]":
+  pths: list[str] = []
 
   for p in paths:
     if p == path or p.startswith(path + "/"):
@@ -88,15 +95,20 @@ def forgetpath(path: str) -> list:
 
   return pths
 
+class Match:
+  def __init__(self, path: str, acc: float):
+    self.path = path
+    self.acc = acc
+  
+  def level(self) -> int:
+    return len(self.path.split("/"))
+
 # Try to find a matching path
 def findpath(filter: str) -> str:
-  matches = []
+  matches: list[Match] = []
 
-  def add_match(path, acc):
-    for m in matches:
-      if m["path"] == path:
-        return
-    match = {"path":path, "acc":acc}
+  def add_match(path: str, acc: float):
+    match: Match = Match(path, acc)
     matches.append(match)
 
   checkslash = "/" in filter
@@ -107,7 +119,7 @@ def findpath(filter: str) -> str:
     if checkslash and lowfilter in lowpath:
       add_match(path, 1)
     split = path.split("/")
-    parts = []
+    parts: list[str] = []
     for part in split:
       parts.append(part)
       lowpart = part.lower()
@@ -116,8 +128,8 @@ def findpath(filter: str) -> str:
         add_match("/".join(parts), acc)
 
   if len(matches) > 0:
-    matches.sort(key=lambda x: (-x["acc"], len(x["path"].split("/"))))
-    return matches[0]["path"]
+    matches.sort(key=lambda x: (-x.acc, x.level()))
+    return matches[0].path
 
   return ""
 
@@ -140,8 +152,8 @@ def guessdir(p: str) -> str:
   return ""
 
 # Write paths to file
-def updatefile(paths: list) -> None:
-  lines = paths[0:max_paths]
+def updatefile(paths: "list[str]") -> None:
+  lines: list[str] = paths[0:max_paths]
   file = open(filepath, "w")
   file.write("\n".join(lines).strip())
   file.close()
