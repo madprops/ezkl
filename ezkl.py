@@ -57,8 +57,8 @@ def main() -> None:
 
     if len(path) == 0:
       path = guessdir(keyword)
-    
-    p = path if path != "" else pwd
+
+    p = path if len(path) > 0 else pwd
     for m in matches:
       if m.path != p:
         if p.startswith(f"{m.path}/") \
@@ -130,6 +130,7 @@ def getmatches(filter: str) -> List[Match]:
     for match in matches:
       if match.path == path:
         return
+    print(acc)
     match: Match = Match(path, acc)
     matches.append(match)
 
@@ -147,7 +148,7 @@ def getmatches(filter: str) -> List[Match]:
       lowpart = part.lower()
       acc = similar(lowpart, lowfilter)
       if lowpart.startswith(lowfilter):
-        add_match("/".join(parts), max(0.99, acc))
+        add_match("/".join(parts), high_acc(lowfilter, lowpart))
       else:
         if acc >= min_accuracy:
           add_match("/".join(parts), acc)
@@ -197,6 +198,12 @@ def suggestpath(path: str) -> None:
 # Check if pwd is set to home
 def athome() -> bool:
   return Path(pwd) == Path(Path.home())
+
+# Get an acc that is near max
+# But that depends on length diff
+def high_acc(a: str, b: str) -> float:
+  diff: float = 0.01 * (max(len(a), len(b)) - min(len(a), len(b)))
+  return 0.99 - diff
 
 # Show some information
 def showinfo() -> None:
