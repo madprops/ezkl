@@ -136,15 +136,18 @@ def getmatches(filter: str) -> List[Match]:
   for path in paths:
     lowpath = path.lower()
     if checkslash and lowfilter in lowpath:
-      add_match(path, 1)
+      add_match(path, 0.9)
     split = path.split("/")
     parts: List[str] = []
     for part in split:
       parts.append(part)
       lowpart = part.lower()
       acc = similar(lowpart, lowfilter)
-      if acc >= min_accuracy or lowfilter in lowpart:
-        add_match("/".join(parts), acc)
+      if lowpart.startswith(lowfilter):
+        add_match("/".join(parts), max(0.9, acc))
+      else:
+        if acc >= min_accuracy:
+          add_match("/".join(parts), acc)
 
   matches.sort(key=lambda x: (-x.acc, x.level()))
   return matches
