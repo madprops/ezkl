@@ -23,7 +23,7 @@ function z () {
   else
     # Check if argument starts with --
     if [[ "$1" == "--"* ]]; then
-      python3 "${CCDIR}"/ezkl.py "$1"
+      python3 "${CCDIR}"/ezkl.py "$@"
     else
       # Find a path to jump to
       output=$(python3 "${CCDIR}"/ezkl.py jump "$1")

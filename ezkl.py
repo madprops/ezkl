@@ -14,7 +14,7 @@ def main():
   getargs()
 
   if mode == "--paths":
-    showpaths()
+    showpaths(keyword)
 
   elif mode == "info":
     showinfo()
@@ -92,11 +92,11 @@ def forgetpath(path):
 def findpath(filter):
   matches = []
 
-  def add_match(path, acc, match):
+  def add_match(path, acc):
     for m in matches:
       if m["path"] == path:
         return
-    match = {"path":path, "acc":acc, "match":match}
+    match = {"path":path, "acc":acc}
     matches.append(match)
 
   checkslash = "/" in filter
@@ -105,7 +105,7 @@ def findpath(filter):
   for path in paths:
     lowpath = path.lower()
     if checkslash and lowfilter in lowpath:
-      add_match(path, 1, filter)
+      add_match(path, 1)
     split = path.split("/")
     parts = []
     for part in split:
@@ -113,10 +113,10 @@ def findpath(filter):
       lowpart = part.lower()
       acc = similar(part, filter)
       if acc >= min_accuracy or lowfilter in lowpart:
-        add_match("/".join(parts), acc, part)
+        add_match("/".join(parts), acc)
 
   if len(matches) > 0:
-    matches.sort(key=lambda x: -x["acc"])
+    matches.sort(key=lambda x: (-x["acc"], len(x["path"].split("/"))))
 
     for m in matches:
       if m["path"] != pwd:
@@ -175,8 +175,14 @@ paths.txt has {len(paths)}/{max_paths} paths saved\n"""
   print(info)
 
 # Print all paths
-def showpaths():
+def showpaths(filter):
+  hasfilter = filter != ""
+  lowfilter = filter.lower()
+
   for path in paths:
+    if hasfilter:
+      if lowfilter not in path.lower():
+        continue
     print(path)
 
 # Program starts here
