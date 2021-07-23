@@ -57,11 +57,14 @@ def main() -> None:
 
     if len(path) == 0:
       path = guessdir(keyword)
-
+    
+    p = path if path != "" else pwd
     for m in matches:
-      if m.path != pwd and m.path != path:
-        if not path.startswith(m.path) and not m.path.startswith(path):
-          suggestpath(m.path)
+      if m.path != p:
+        if p.startswith(f"{m.path}/") \
+          or m.path.startswith(f"{p}/"):
+            break
+        suggestpath(m.path)
 
     if len(path) > 0:
       updatefile(filterpath(path))
@@ -136,7 +139,7 @@ def getmatches(filter: str) -> List[Match]:
   for path in paths:
     lowpath = path.lower()
     if checkslash and lowfilter in lowpath:
-      add_match(path, 0.9)
+      add_match(path, 0.99)
     split = path.split("/")
     parts: List[str] = []
     for part in split:
@@ -144,7 +147,7 @@ def getmatches(filter: str) -> List[Match]:
       lowpart = part.lower()
       acc = similar(lowpart, lowfilter)
       if lowpart.startswith(lowfilter):
-        add_match("/".join(parts), max(0.9, acc))
+        add_match("/".join(parts), max(0.99, acc))
       else:
         if acc >= min_accuracy:
           add_match("/".join(parts), acc)
