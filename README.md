@@ -1,4 +1,4 @@
-### This is meant to be a z replacement that better meets my needs
+### This is meant to be a z implementation that better meets my needs
 
 Git clone this somewhere then add this to .bashrc:
 
