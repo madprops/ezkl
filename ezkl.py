@@ -9,7 +9,7 @@ from pathlib import Path
 from difflib import SequenceMatcher
 
 # Main function
-def main():
+def main() -> None:
   getargs()
   getpaths()
 
@@ -37,7 +37,7 @@ def main():
       print(path)
 
 # Get arguments. Might exit here
-def getargs():
+def getargs() -> None:
   global mode
   global keyword
 
@@ -52,7 +52,7 @@ def getargs():
     exit(0)
 
 # Read the paths file plus other paths
-def getpaths():
+def getpaths() -> None:
   global paths
   global filepath
   global pwd
@@ -64,10 +64,10 @@ def getpaths():
   paths = list(map(str.strip, paths))
   paths = list(filter(None, paths))
   file.close()
-  pwd = cleanpath(getenv("PWD"))
+  pwd = cleanpath(str(getenv("PWD")))
 
 # Put path in first line
-def filterpath(path):
+def filterpath(path: str) -> list:
   pths = [path]
 
   for p in paths:
@@ -78,7 +78,7 @@ def filterpath(path):
   return pths
 
 # Remove path and subdirs
-def forgetpath(path):
+def forgetpath(path: str) -> list:
   pths = []
 
   for p in paths:
@@ -89,7 +89,7 @@ def forgetpath(path):
   return pths
 
 # Try to find a matching path
-def findpath(filter):
+def findpath(filter: str) -> str:
   matches = []
 
   def add_match(path, acc):
@@ -123,7 +123,7 @@ def findpath(filter):
 
 # Check if path or similar exists in directory
 # It checks current directory and then home
-def guessdir(p):
+def guessdir(p: str) -> str:
   pths = [p, p.capitalize(), p.lower(), p.upper(), f".{p}"]
 
   for s in pths:
@@ -140,26 +140,26 @@ def guessdir(p):
   return ""
 
 # Write paths to file
-def updatefile(paths):
+def updatefile(paths: list) -> None:
   lines = paths[0:max_paths]
   file = open(filepath, "w")
   file.write("\n".join(lines).strip())
   file.close()
 
 # Check string similarity from 0 to 1
-def similar(a, b):
+def similar(a: str, b: str) -> float:
   return SequenceMatcher(None, a, b).ratio()
 
 # Remove unecessary characters
-def cleanpath(path):
+def cleanpath(path: str) -> str:
   return path.rstrip("/")
 
 # Check if pwd is set to home
-def athome():
+def athome() -> bool:
   return Path(pwd) == Path(Path.home())
 
 # Show some information
-def showinfo():
+def showinfo() -> None:
   info = f"""\nezkl is installed and ready to use
 ---------------------------------------------
 Jump around directories. For instance 'z music'
@@ -172,7 +172,7 @@ paths.txt has {len(paths)}/{max_paths} paths saved\n"""
   print(info)
 
 # Print all paths
-def showpaths(filter):
+def showpaths(filter: str) -> None:
   hasfilter = filter != ""
   lowfilter = filter.lower()
 
