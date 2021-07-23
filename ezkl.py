@@ -130,7 +130,6 @@ def getmatches(filter: str) -> List[Match]:
     for match in matches:
       if match.path == path:
         return
-    print(acc)
     match: Match = Match(path, acc)
     matches.append(match)
 
