@@ -21,15 +21,20 @@ function z () {
   if [ -z "$1" ]; then
     python3 "${CCDIR}"/ezkl.py info
   else
-    # Find a path to jump to
-    output=$(python3 "${CCDIR}"/ezkl.py jump "$1")
-    # cd to the response
-    builtin cd "$output"
-    if [ $? -eq 0 ]; then
-      :
+    # Check if argument starts with --
+    if [[ "$1" == "--"* ]]; then
+      python3 "${CCDIR}"/ezkl.py "$1"
     else
-      # If cd was not ok then forget the path
-      python3 "${CCDIR}"/ezkl.py forget "$output"
+      # Find a path to jump to
+      output=$(python3 "${CCDIR}"/ezkl.py jump "$1")
+      # cd to the response
+      builtin cd "$output"
+      if [ $? -eq 0 ]; then
+        :
+      else
+        # If cd was not ok then forget the path
+        python3 "${CCDIR}"/ezkl.py forget "$output"
+      fi
     fi
   fi
 }

@@ -13,7 +13,10 @@ def main():
   getpaths()
   getargs()
 
-  if mode == "info":
+  if mode == "--paths":
+    showpaths()
+
+  elif mode == "info":
     showinfo()
 
   elif mode == "remember":
@@ -38,14 +41,14 @@ def getargs():
   global mode
   global keyword
 
-  args = [x for x in argv[1:] if not x.startswith("-")]
+  args = argv[1:]
   mode = args[0] if len(args) > 0 else ""
   keyword = args[1] if len(args) > 1 else ""
 
-  if mode not in ["remember", "forget", "jump", "info"]:
+  if mode not in ["--paths", "remember", "forget", "jump", "info"]:
     exit(0)
 
-  if mode != "info" and keyword == "":
+  if mode not in ["--paths", "info"] and keyword == "":
     exit(0)
 
 # Read the paths file plus other paths
@@ -165,12 +168,16 @@ def showinfo():
 Jump around directories. For instance 'z music'
 Directories get remembered by using cd normally
 Paths are saved in ezkl/paths.txt
-If you don't need this anymore remove, ezkl from ~/.bashrc
-Remember to restart Bash for changes to apply
+Use 'z --paths' to print saved paths
 ---------------------------------------------
 Minimum accuracy is set to {min_accuracy}
 paths.txt has {len(paths)}/{max_paths} paths saved\n"""
   print(info)
+
+# Print all paths
+def showpaths():
+  for path in paths:
+    print(path)
 
 # Program starts here
 if __name__ == "__main__": main()
