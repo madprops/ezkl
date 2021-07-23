@@ -111,7 +111,7 @@ def findpath(filter):
     for part in split:
       parts.append(part)
       lowpart = part.lower()
-      acc = similar(part, filter)
+      acc = similar(lowpart, lowfilter)
       if acc >= min_accuracy or lowfilter in lowpart:
         add_match("/".join(parts), acc)
 
