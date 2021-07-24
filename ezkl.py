@@ -21,7 +21,7 @@ class Match:
     for m in matches:
       add = True
       for m2 in matches2:
-        if m == m2:
+        if m.path == m2.path:
           add = False
           break
       if add:
@@ -73,18 +73,7 @@ def main() -> None:
           path = m.path
           break
     
-    if len(matches) > 0:
-      n = 0
-      p = path if len(path) > 0 else pwd
-      for m in matches:
-        if m.path != p:
-          if p.startswith(f"{m.path}/") \
-            or m.path.startswith(f"{p}/"):
-              break
-          path_hint(m.path)
-          n += 1
-          if n == max_hints:
-            break
+    show_hints(matches, path)
 
     if len(path) > 0:
       update_file(filter_path(path))
@@ -208,7 +197,7 @@ def similar(a: str, b: str) -> float:
 def clean_path(path: str) -> str:
   return path.rstrip("/")
 
-# Print a path suggestion
+# Print a path hint
 def path_hint(path: str) -> None:
   CRED = "\033[92m"
   CEND = "\033[0m"
@@ -247,6 +236,28 @@ def show_paths(filter: str) -> None:
       if lowfilter not in path.lower():
         continue
     print(path)
+
+# Show path hints
+def show_hints(matches: List[Match], path: str) -> None:
+  if len(matches) == 0:
+    return
+  n = 0
+  hinted = False
+  p = path if len(path) > 0 else pwd
+  for m in matches:
+    if m.path != p:
+      if p.startswith(f"{m.path}/") \
+        or m.path.startswith(f"{p}/"):
+          break
+      if not hinted:
+        print(" ")
+        hinted = True
+      path_hint(m.path)
+      n += 1
+      if n == max_hints:
+        break
+  if hinted:
+    print(" ")
 
 # Program starts here
 if __name__ == "__main__": main()
