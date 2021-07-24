@@ -110,10 +110,9 @@ def main() -> None:
     if num > 0:
       if num > 1:
         show_options(matches)
-      elif num:
+      else:
         path = matches.first().path
-        update_file(filter_path(path))
-        print(path)
+        goto_dir(path)
 
 # Get arguments. Might exit here
 def get_args() -> None:
@@ -282,8 +281,7 @@ def show_options(matches: MatchList) -> None:
     if num > 0 and num <= len(matches.items):
       item = matches.items[num - 1]
       if mode == "normal":
-        update_file(filter_path(item.path))
-        print(item.path)
+        goto_dir(item.path)
       elif mode == "forget":
         update_file(forget_path(item.path, False))
 
@@ -297,6 +295,12 @@ def to_number(s: str) -> int:
 # Print to stderr
 def eprint(s: str):
   print(s, file=stderr)
+
+# Print the path for cd
+def goto_dir(path: str) -> None:
+  if Path(path) != Path(pwd):
+    update_file(filter_path(path))
+    print(path)
 
 # Program starts here
 if __name__ == "__main__": main()

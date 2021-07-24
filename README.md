@@ -18,9 +18,11 @@ And use z to jump to locations
 
 ![](https://i.imgur.com/fb0YCxH.jpg)
 
-In this example you can see the hints:
+In this example you can see the prompt:
 
-![](https://i.imgur.com/QdowTUs.jpg)
+![](https://i.imgur.com/waIQlKF.jpg)
+
+This appears when there are more than 1 option. Picking an option goes to that directory. Using d + number removes that path from the paths file.
 
 I don't plan on adding flags/options, but instead aim to optimize/predict as much as possible what the user wants when jumping. It uses an algorithm to prioritize some paths over others. It will choose the exact parent location in case there's no better match, for instance /foo/ instead of /foo/that when using 'foo'. It uses a similarity check so the keyword provided doesn't have to be exact (scripz will match scripts) (Higher accuracy = Higher priority). It forgets paths (from paths.txt) that don't seem to exist anymore (including subpaths). It's possible to use multiple keywords to specify path hierarchy, "z code tetris" matches paths like `~/code/tetris`. If there are more than one suitable paths it will prompt the user to pick one.
 
