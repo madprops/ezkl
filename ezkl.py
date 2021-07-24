@@ -1,6 +1,7 @@
 # Imports
 import re
 from sys import argv
+from sys import stderr
 from os import getenv
 from typing import List
 from pathlib import Path
@@ -31,10 +32,12 @@ class MatchList:
 
     for m in self.items:
       add = True
-      for m2 in matches:
-        if m.path == m2.path:
-          add = False
-          break
+      
+      if add:
+        for m2 in matches:
+          if m.path == m2.path:
+            add = False
+            break
 
       if add:
         if not re.search(rstr, m.path.lower()):
@@ -48,11 +51,24 @@ class MatchList:
   # Sort the list by accuracy and path level
   def sort(self) -> None:
     self.items.sort(key=lambda x: (-x.acc, x.level()))
+  
+  # Used for debuggin purposes
+  def to_string(self) -> None:
+    for m in self.items:
+      print(f"{m.path} -> {m.acc}")
+  
+  # Get first item
+  def first(self) -> Match:
+    return self.items[0]
+  
+  # Get number of matches
+  def len(self) -> int:
+    return len(self.items)
 
 # Settings
 min_accuracy: float = 0.66
 max_paths: int = 250
-max_hints: int = 3
+max_hints: int = 5
 
 # Globals
 mode: str
@@ -79,7 +95,6 @@ def main() -> None:
     show_paths(keyw)
 
   elif mode == "jump":
-    path = ""
     matches = MatchList()
     kws = list(filter(lambda x: x != "", \
       re.split("\\s|/", keyw)))
@@ -91,16 +106,13 @@ def main() -> None:
     matches.filter(kws)
     matches.sort()
 
-    for m in matches.items:
-      if m.path != pwd:
-        path = m.path
-        break
-
-    show_path_hints(matches, path)
-
-    if len(path) > 0:
-      update_file(filter_path(path))
-      print(path)
+    if matches.len() > 0:
+      if matches.len() > 1:
+        choose_path(matches)
+      elif matches.len():
+        path = matches.first().path
+        update_file(filter_path(path))
+        print(path)
 
 # Get arguments. Might exit here
 def get_args() -> None:
@@ -217,10 +229,10 @@ def clean_path(path: str) -> str:
   return path.rstrip("/")
 
 # Show a hint
-def show_hint(path: str) -> None:
+def show_hint(path: str, n: int) -> None:
   CRED = "\033[92m"
   CEND = "\033[0m"
-  print(f"{CRED}[Hint]{CEND} {path}")
+  eprint(f"{CRED}({n}){CEND} {path}")
 
 # Check if pwd is set to home
 def at_home() -> bool:
@@ -257,33 +269,25 @@ def show_paths(filter: str) -> None:
     print(path)
 
 # Show paths that might be relevant
-def show_path_hints(matches: MatchList, path: str) -> None:
-  if len(matches.items) == 0:
-    return
-
-  n = 0
-  hinted = False
-  p = path if len(path) > 0 else pwd
-
+def choose_path(matches: MatchList) -> None:
+  n = 1
   for m in matches.items:
-    if m.path != p:
-      if p.startswith(f"{m.path}/") \
-        or m.path.startswith(f"{p}/"):
-          break
-      if not hinted:
-        print(" ")
-        hinted = True
-      show_hint(m.path)
-      n += 1
-      if n == max_hints:
-        break
-
-  if hinted:
-    print(" ")
+    show_hint(m.path, n)
+    n += 1
+    if n > max_hints:
+      break
+  try:
+    print(matches.items[int(input()) - 1].path)
+  except:
+    pass
 
 # Used for debuggin paths
 def dprint(s: str) -> None:
   print(f"# {s}")
+
+# Print to stderr
+def eprint(s: str):
+  print(s, file=stderr)
 
 # Program starts here
 if __name__ == "__main__": main()
