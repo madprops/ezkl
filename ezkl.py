@@ -211,7 +211,7 @@ def clean_path(path: str) -> str:
 def suggest_path(path: str) -> None:
   CRED = "\033[92m"
   CEND = "\033[0m"
-  print(f"{CRED}[Suggestion]{CEND} {path}")
+  print(f"{CRED}[+]{CEND} {path}")
 
 # Check if pwd is set to home
 def at_home() -> bool:
