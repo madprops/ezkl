@@ -27,19 +27,19 @@ class Match:
         if m.path == m2.path:
           add = False
           break
-      
+
       if not re.search(rstr, m.path.lower()):
         add = False
 
       if add:
         matches2.append(m)
     return matches2
-  
+
   @staticmethod
   def sort(matches: "List[Match]") -> "List[Match]":
     matches.sort(key=lambda x: (-x.acc, x.level()))
     return matches
-  
+
 # Settings
 min_accuracy: float = 0.66
 max_paths: int = 250
@@ -89,7 +89,7 @@ def main() -> None:
         if m.path != pwd:
           path = m.path
           break
-    
+
     show_hints(matches, path)
 
     if len(path) > 0:
