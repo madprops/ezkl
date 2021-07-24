@@ -19,7 +19,9 @@ complete -A directory cd
 function z () {
   # Check if there are no arguments
   if [ -z "$1" ]; then
-    python3 "${CCDIR}"/ezkl.py top
+    python3 "${CCDIR}"/ezkl.py top &&
+    path=$(cat "${CCDIR}/ezpath") &&
+    builtin cd "$path"
   else
     # Show paths if command is --paths
     # Second argument is used as filter
@@ -27,30 +29,9 @@ function z () {
       python3 "${CCDIR}"/ezkl.py paths "$2"
     else
       # Else find a path to jump to
-      # All output lines will be processed
-      output=$(python3 "${CCDIR}"/ezkl.py jump "$@")
-      while IFS= read -r line; do
-        # If output starts with slash...
-        # This means it's a path
-        if [[ "$line" == "/"* ]]; then
-          # cd to the response
-          builtin cd "$line"
-          if [ $? -eq 0 ]; then
-            :
-          else
-            # If cd was not ok then forget the path
-            python3 "${CCDIR}"/ezkl.py forget "$line"
-          fi
-        else
-          # If output is empty then ignore
-          if [ -z "$line" ]; then
-            :
-          else
-            # Else print the output
-            echo "$line"
-          fi
-        fi
-      done <<< "$output"
+      python3 "${CCDIR}"/ezkl.py jump "$@" &&
+      path=$(cat "${CCDIR}/ezpath") &&
+      builtin cd "$path"
     fi
   fi
 }

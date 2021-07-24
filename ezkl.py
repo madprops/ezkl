@@ -1,7 +1,6 @@
 # Imports
 import re
 from sys import argv
-from sys import stderr
 from os import getenv
 from typing import List
 from typing import Optional
@@ -76,6 +75,7 @@ max_options: int = 5
 mode: str
 keyw: str
 paths: List[str]
+thispath: Path
 filepath: Path
 pwd: str
 
@@ -109,14 +109,15 @@ def get_args() -> None:
   keyw = " ".join(args[1:]) if len(args) > 1 else ""
 
   if mode not in ["remember", "forget", "jump", "top", "paths"]:
-    exit(0)
+    exit(1)
 
   if mode in ["forget", "jump"] and keyw == "":
-    exit(0)
+    exit(1)
 
 # Read the paths file plus other paths
 def get_paths() -> None:
   global paths
+  global thispath
   global filepath
   global pwd
   thispath = Path(__file__).parent.resolve()
@@ -195,10 +196,10 @@ def show_paths(filter: str) -> None:
     print(path)
 
 # Show an option
-def show_option(path: str, n: int) -> None:
+def format_option(path: str, n: int) -> str:
   CRED = "\033[92m"
   CEND = "\033[0m"
-  eprint(f"{CRED}({n}){CEND} {path}")
+  return f"{CRED}({n}){CEND} {path}"
 
 # Show paths that might be relevant
 # Pick one by number. d is used to forget
@@ -207,36 +208,36 @@ def show_options(matches: MatchList) -> None:
   ans = ""
 
   for m in matches.items:
-    show_option(m.path, n)
+    print(format_option(m.path, n))
     n += 1
     if n > max_options:
       break
-
+  
   try:
-    ans = input().strip()
+    ans = input()
   except:
-    pass
+    exit(1)
 
-  if ans != "":
-    mode = ""
+  if ans == "": exit(1)
+  mode = ""
 
-    if re.search("^\\d+$", ans):
-      mode = "jump"
-    elif re.search("^d\\d+$", ans):
-      mode = "forget"
-    else:
-      jump(re.sub("^z\\s+", "", ans))
-      exit(0)
+  if re.search("^\\d+$", ans):
+    mode = "jump"
+  elif re.search("^d\\d+$", ans):
+    mode = "forget"
+  else:
+    jump(re.sub("^z\\s+", "", ans))
+    exit(0)
 
-    if mode in ["jump", "forget"]:
-      num = to_number(ans)
+  if mode in ["jump", "forget"]:
+    num = to_number(ans)
 
-      if num > 0 and num <= len(matches.items):
-        item = matches.items[num - 1]
-        if mode == "jump":
-          goto_dir(item.path)
-        elif mode == "forget":
-          update_file(forget_path(item.path, False))
+    if num > 0 and num <= len(matches.items):
+      item = matches.items[num - 1]
+      if mode == "jump":
+        update_path(item.path)
+      elif mode == "forget":
+        update_file(forget_path(item.path, False))
 
 # Parse string to number
 def to_number(s: str) -> int:
@@ -245,15 +246,15 @@ def to_number(s: str) -> int:
     return int(num)
   return 0
 
-# Print to stderr
-def eprint(s: str) -> None:
-  print(s, file=stderr)
-
-# Print the path for cd
-def goto_dir(path: str) -> None:
+# Save the path to an env variable
+def update_path(path: str) -> None:
   if Path(path) != Path(pwd):
     update_file(filter_path(path))
-    print(path)
+    fpath = Path(thispath) / Path("ezpath")
+    fpath.touch(exist_ok=True)
+    file = open(fpath, "w")
+    file.write(path)
+    file.close()
 
 # Main jump function
 def jump(keywords: str) -> None:
@@ -272,7 +273,7 @@ def jump(keywords: str) -> None:
       show_options(matches)
     else:
       path = matches.first().path
-      goto_dir(path)
+      update_path(path)
 
 # Show the first paths
 def show_top() -> None:
