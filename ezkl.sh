@@ -28,7 +28,7 @@ function z () {
     else
       # Else find a path to jump to
       # All output lines will be processed
-      output=$(python3 "${CCDIR}"/ezkl.py jump "$1")
+      output=$(python3 "${CCDIR}"/ezkl.py jump "$@")
       while IFS= read -r line; do
         # If output starts with slash...
         # This means it's a path

@@ -1,4 +1,5 @@
 # Imports
+import re
 from sys import argv
 from os import getenv
 from typing import List
@@ -13,10 +14,12 @@ class Match:
 
   def level(self) -> int:
     return len(self.path.split("/"))
-  
+
   @staticmethod
-  def sort(matches: "List[Match]") -> "List[Match]":
+  def filter(matches: "List[Match]", filters: List[str]) -> "List[Match]":
     matches2: List[Match] = []
+    rstr = ".*" + ".*/".join(filters) + ".*"
+
     matches.sort(key=lambda x: (-x.acc, x.level()))
     for m in matches:
       add = True
@@ -24,9 +27,18 @@ class Match:
         if m.path == m2.path:
           add = False
           break
+      
+      if not re.search(rstr, m.path.lower()):
+        add = False
+
       if add:
         matches2.append(m)
     return matches2
+  
+  @staticmethod
+  def sort(matches: "List[Match]") -> "List[Match]":
+    matches.sort(key=lambda x: (-x.acc, x.level()))
+    return matches
   
 # Settings
 min_accuracy: float = 0.66
@@ -35,7 +47,7 @@ max_hints: int = 3
 
 # Globals
 mode: str
-keyword: str
+keyw: str
 paths: List[str]
 filepath: Path
 pwd: str
@@ -52,22 +64,27 @@ def main() -> None:
     update_file(filter_path(pwd))
 
   elif mode == "forget":
-    update_file(forget_path(keyword))
+    update_file(forget_path(keyw))
 
   elif mode == "paths":
-    show_paths(keyword)
+    show_paths(keyw)
 
   elif mode == "jump":
     path = ""
     matches: List[Match] = []
 
-    if keyword.startswith("/"):
-      path = clean_path(keyword)
+    if keyw.startswith("/"):
+      path = clean_path(keyw.replace(" ", ""))
 
     else:
-      matches = get_matches(keyword) \
-        + get_guesses(keyword)
-      matches = Match.sort(matches)
+      kw = keyw.split(" ")
+
+      for w in kw:
+        matches += get_matches(w) \
+          + get_guesses(w)
+
+      matches = Match.sort(Match.filter(matches, kw))
+
       for m in matches:
         if m.path != pwd:
           path = m.path
@@ -82,16 +99,16 @@ def main() -> None:
 # Get arguments. Might exit here
 def get_args() -> None:
   global mode
-  global keyword
+  global keyw
 
   args = argv[1:]
   mode = args[0] if len(args) > 0 else ""
-  keyword = args[1] if len(args) > 1 else ""
+  keyw = " ".join(args[1:]) if len(args) > 1 else ""
 
   if mode not in ["remember", "forget", "jump", "info", "paths"]:
     exit(0)
 
-  if mode in ["forget", "jump"] and keyword == "":
+  if mode in ["forget", "jump"] and keyw == "":
     exit(0)
 
 # Read the paths file plus other paths
