@@ -26,7 +26,9 @@ class MatchList:
     self.items.append(match)
 
   # Remove unecessary items
-  def filter(self, filters: List[str]) -> None:
+  def sort(self, filters: List[str], max: int) -> None:
+    # First sort by accuracy
+    self.items.sort(key=lambda x: (-x.acc, x.level()))
     matches: List[Match] = []
     rstr = ".*" + ".*/.*".join(filters) + ".*"
 
@@ -45,12 +47,12 @@ class MatchList:
 
       if add:
         matches.append(m)
+        if len(matches) == max:
+          break
 
+    # Now sort alphabetically
+    matches.sort(key=lambda x: (x.path))
     self.items = matches
-
-  # Sort the list by accuracy and path level
-  def sort(self) -> None:
-    self.items.sort(key=lambda x: (-x.acc, x.level()))
 
   # Used for debuggin purposes
   def to_string(self) -> None:
@@ -102,8 +104,7 @@ def main() -> None:
     for kw in kws:
       matches.items += get_matches(kw).items
 
-    matches.filter(kws)
-    matches.sort()
+    matches.sort(kws, max_options)
     num = matches.len()
 
     if num > 0:
@@ -278,16 +279,20 @@ def show_options(matches: MatchList) -> None:
     if ans.startswith("d"):
       mode = "forget"
     num = to_number(ans)
-    item = matches.items[num - 1]
-    if mode == "normal":
-      update_file(filter_path(item.path))
-      print(item.path)
-    elif mode == "forget":
-      update_file(forget_path(item.path, False))
+    if num > 0 and num <= len(matches.items):
+      item = matches.items[num - 1]
+      if mode == "normal":
+        update_file(filter_path(item.path))
+        print(item.path)
+      elif mode == "forget":
+        update_file(forget_path(item.path, False))
 
 # Parse string to number
 def to_number(s: str) -> int:
-  return int(re.sub("[^0-9]", "", s))
+  num = re.sub("[^0-9]", "", s)
+  if len(num) > 0:
+    return int(num)
+  return 0
 
 # Print to stderr
 def eprint(s: str):
