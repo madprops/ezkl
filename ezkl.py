@@ -31,6 +31,7 @@ class Match:
 # Settings
 min_accuracy: float = 0.66
 max_paths: int = 250
+max_hints: int = 3
 
 # Globals
 mode: str
@@ -80,9 +81,9 @@ def main() -> None:
           if p.startswith(f"{m.path}/") \
             or m.path.startswith(f"{p}/"):
               break
-          suggest_path(m.path)
+          path_hint(m.path)
           n += 1
-          if n == 3:
+          if n == max_hints:
             break
 
     if len(path) > 0:
@@ -208,10 +209,10 @@ def clean_path(path: str) -> str:
   return path.rstrip("/")
 
 # Print a path suggestion
-def suggest_path(path: str) -> None:
+def path_hint(path: str) -> None:
   CRED = "\033[92m"
   CEND = "\033[0m"
-  print(f"{CRED}[+]{CEND} {path}")
+  print(f"{CRED}[Hint]{CEND} {path}")
 
 # Check if pwd is set to home
 def at_home() -> bool:
