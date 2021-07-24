@@ -97,22 +97,7 @@ def main() -> None:
     show_paths(keyw)
 
   elif mode == "jump":
-    matches = MatchList()
-    kws = list(filter(lambda x: x != "", \
-      re.split("\\s|/", keyw)))
-
-    for kw in kws:
-      matches.items += get_matches(kw).items
-
-    matches.sort(kws, max_options)
-    num = matches.len()
-
-    if num > 0:
-      if num > 1:
-        show_options(matches)
-      else:
-        path = matches.first().path
-        goto_dir(path)
+    jump(keyw)
 
 # Get arguments. Might exit here
 def get_args() -> None:
@@ -274,16 +259,25 @@ def show_options(matches: MatchList) -> None:
     pass
 
   if ans != "":
-    mode = "normal"
-    if ans.startswith("d"):
+    mode = ""
+
+    if re.search("^\\d+$", ans):
+      mode = "jump"
+    elif re.search("^d\\d+$", ans):
       mode = "forget"
-    num = to_number(ans)
-    if num > 0 and num <= len(matches.items):
-      item = matches.items[num - 1]
-      if mode == "normal":
-        goto_dir(item.path)
-      elif mode == "forget":
-        update_file(forget_path(item.path, False))
+    else:
+      jump(ans)
+      exit(0)
+
+    if mode in ["jump", "forget"]:
+      num = to_number(ans)
+
+      if num > 0 and num <= len(matches.items):
+        item = matches.items[num - 1]
+        if mode == "jump":
+          goto_dir(item.path)
+        elif mode == "forget":
+          update_file(forget_path(item.path, False))
 
 # Parse string to number
 def to_number(s: str) -> int:
@@ -301,6 +295,25 @@ def goto_dir(path: str) -> None:
   if Path(path) != Path(pwd):
     update_file(filter_path(path))
     print(path)
+
+# Main jump function
+def jump(keywords: str) -> None:
+  matches = MatchList()
+  kws = list(filter(lambda x: x != "", \
+    re.split("\\s|/", keywords)))
+
+  for kw in kws:
+    matches.items += get_matches(kw).items
+
+  matches.sort(kws, max_options)
+  num = matches.len()
+
+  if num > 0:
+    if num > 1:
+      show_options(matches)
+    else:
+      path = matches.first().path
+      goto_dir(path)
 
 # Program starts here
 if __name__ == "__main__": main()
