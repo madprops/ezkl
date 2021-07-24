@@ -281,10 +281,6 @@ def choose_path(matches: MatchList) -> None:
   except:
     pass
 
-# Used for debuggin paths
-def dprint(s: str) -> None:
-  print(f"# {s}")
-
 # Print to stderr
 def eprint(s: str):
   print(s, file=stderr)
