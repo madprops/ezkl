@@ -18,18 +18,12 @@ And use z to jump to locations
 
 ![](https://i.imgur.com/IFp9xtB.jpg)
 
-Options appear when there are more than 1 path. 
+It forgets paths (from paths.txt) that don't seem to exist anymore.
 
-Picking an option goes to that directory. 
+It's possible to use multiple keywords to specify path hierarchy:
 
-Using d + number removes that path from the paths file.
+"z code tetris" matches paths like `~/code/tetris`. 
 
-If the answer in the prompt is not a number or d + number, it will use the  text to search for matches again.
+Using d + number at a prompt removes that path from the paths file.
 
-I don't plan on adding flags/options, but instead aim to optimize/predict as much as possible what the user wants when jumping. 
-
-It forgets paths (from paths.txt) that don't seem to exist anymore (including subpaths). 
-
-It's possible to use multiple keywords to specify path hierarchy, "z code tetris" matches paths like `~/code/tetris`. 
-
-If there are more than one suitable paths it will prompt the user to pick one.
+There's a `--paths` flag to print all paths.
