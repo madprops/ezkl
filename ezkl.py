@@ -13,7 +13,21 @@ class Match:
 
   def level(self) -> int:
     return len(self.path.split("/"))
-
+  
+  @staticmethod
+  def sort(matches: "List[Match]") -> "List[Match]":
+    matches2: List[Match] = []
+    matches.sort(key=lambda x: (-x.acc, x.level()))
+    for m in matches:
+      add = True
+      for m2 in matches2:
+        if m == m2:
+          add = False
+          break
+      if add:
+        matches2.append(m)
+    return matches2
+  
 # Settings
 min_accuracy: float = 0.66
 max_paths: int = 250
@@ -27,51 +41,56 @@ pwd: str
 
 # Main function
 def main() -> None:
-  getargs()
-  getpaths()
+  get_args()
+  get_paths()
 
   if mode == "info":
-    showinfo()
+    show_info()
 
   elif mode == "remember":
-    updatefile(filterpath(pwd))
+    update_file(filter_path(pwd))
 
   elif mode == "forget":
-    updatefile(forgetpath(keyword))
+    update_file(forget_path(keyword))
 
   elif mode == "paths":
-    showpaths(keyword)
+    show_paths(keyword)
 
   elif mode == "jump":
     path = ""
     matches: List[Match] = []
 
     if keyword.startswith("/"):
-      path = cleanpath(keyword)
+      path = clean_path(keyword)
 
     else:
-      matches = getmatches(keyword)
-      if len(matches) > 0:
-        if matches[0].path != pwd:
-          path = matches[0].path
-
-    if len(path) == 0:
-      path = guessdir(keyword)
-
-    p = path if len(path) > 0 else pwd
-    for m in matches:
-      if m.path != p:
-        if p.startswith(f"{m.path}/") \
-          or m.path.startswith(f"{p}/"):
+      matches = get_matches(keyword) \
+        + get_guesses(keyword)
+      matches = Match.sort(matches)
+      for m in matches:
+        if m.path != pwd:
+          path = m.path
+          break
+    
+    if len(matches) > 0:
+      n = 0
+      p = path if len(path) > 0 else pwd
+      for m in matches:
+        if m.path != p:
+          if p.startswith(f"{m.path}/") \
+            or m.path.startswith(f"{p}/"):
+              break
+          suggest_path(m.path)
+          n += 1
+          if n == 3:
             break
-        suggestpath(m.path)
 
     if len(path) > 0:
-      updatefile(filterpath(path))
+      update_file(filter_path(path))
       print(path)
 
 # Get arguments. Might exit here
-def getargs() -> None:
+def get_args() -> None:
   global mode
   global keyword
 
@@ -86,7 +105,7 @@ def getargs() -> None:
     exit(0)
 
 # Read the paths file plus other paths
-def getpaths() -> None:
+def get_paths() -> None:
   global paths
   global filepath
   global pwd
@@ -98,10 +117,10 @@ def getpaths() -> None:
   paths = list(map(str.strip, paths))
   paths = list(filter(None, paths))
   file.close()
-  pwd = cleanpath(str(getenv("PWD")))
+  pwd = clean_path(str(getenv("PWD")))
 
 # Put path in first line
-def filterpath(path: str) -> List[str]:
+def filter_path(path: str) -> List[str]:
   pths = [path]
 
   for p in paths:
@@ -112,7 +131,7 @@ def filterpath(path: str) -> List[str]:
   return pths
 
 # Remove path and subdirs
-def forgetpath(path: str) -> List[str]:
+def forget_path(path: str) -> List[str]:
   pths: List[str] = []
 
   for p in paths:
@@ -123,7 +142,7 @@ def forgetpath(path: str) -> List[str]:
   return pths
 
 # Try to find a matching path
-def getmatches(filter: str) -> List[Match]:
+def get_matches(filter: str) -> List[Match]:
   matches: List[Match] = []
 
   def add_match(path: str, acc: float) -> None:
@@ -152,29 +171,29 @@ def getmatches(filter: str) -> List[Match]:
         if acc >= min_accuracy:
           add_match("/".join(parts), acc)
 
-  matches.sort(key=lambda x: (-x.acc, x.level()))
   return matches
 
 # Check if path or similar exists in directory
 # It checks current directory and then home
-def guessdir(p: str) -> str:
+def get_guesses(p: str) -> List[Match]:
+  guesses: list[Match] = []
   pths = [p, p.capitalize(), p.lower(), p.upper(), f".{p}"]
 
   for s in pths:
     dir = Path(pwd) / Path(s)
     if dir.is_dir():
-      return str(dir)
+      guesses.append(Match(str(dir), 0.9))
 
-  if not athome():
+  if not at_home():
     for s in pths:
       dir = Path.home() / Path(s)
       if dir.is_dir():
-        return str(dir)
+        guesses.append(Match(str(dir), 0.9))
 
-  return ""
+  return guesses
 
 # Write paths to file
-def updatefile(paths: List[str]) -> None:
+def update_file(paths: List[str]) -> None:
   lines: List[str] = paths[0:max_paths]
   file = open(filepath, "w")
   file.write("\n".join(lines).strip())
@@ -185,17 +204,17 @@ def similar(a: str, b: str) -> float:
   return SequenceMatcher(None, a, b).ratio()
 
 # Remove unecessary characters
-def cleanpath(path: str) -> str:
+def clean_path(path: str) -> str:
   return path.rstrip("/")
 
 # Print a path suggestion
-def suggestpath(path: str) -> None:
+def suggest_path(path: str) -> None:
   CRED = "\033[92m"
   CEND = "\033[0m"
   print(f"{CRED}[Suggestion]{CEND} {path}")
 
 # Check if pwd is set to home
-def athome() -> bool:
+def at_home() -> bool:
   return Path(pwd) == Path(Path.home())
 
 # Get an acc that is near max
@@ -205,7 +224,7 @@ def high_acc(a: str, b: str) -> float:
   return 0.99 - diff
 
 # Show some information
-def showinfo() -> None:
+def show_info() -> None:
   info = f"""\nezkl is installed and ready to use
 ---------------------------------------------
 Jump around directories. For instance 'z music'
@@ -218,7 +237,7 @@ paths.txt has {len(paths)}/{max_paths} paths saved\n"""
   print(info)
 
 # Print all paths
-def showpaths(filter: str) -> None:
+def show_paths(filter: str) -> None:
   hasfilter = filter != ""
   lowfilter = filter.lower()
 
