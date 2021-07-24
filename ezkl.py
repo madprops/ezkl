@@ -5,13 +5,11 @@ from sys import stderr
 from os import getenv
 from typing import List
 from pathlib import Path
-from difflib import SequenceMatcher
 
-# Matched paths and their accuracy
+# Matched paths
 class Match:
-  def __init__(self, path: str, acc: float):
+  def __init__(self, path: str):
     self.path = path
-    self.acc = acc
 
   def level(self) -> int:
     return len(self.path.split("/"))
@@ -26,9 +24,7 @@ class MatchList:
     self.items.append(match)
 
   # Remove unecessary items
-  def sort(self, filters: List[str], max: int) -> None:
-    # First sort by accuracy
-    self.items.sort(key=lambda x: (-x.acc, x.level()))
+  def filter(self, filters: List[str], max: int) -> None:
     matches: List[Match] = []
     rstr = ".*" + ".*/.*".join(filters) + ".*"
 
@@ -50,14 +46,12 @@ class MatchList:
         if len(matches) == max:
           break
 
-    # Now sort alphabetically
-    matches.sort(key=lambda x: (x.path))
     self.items = matches
 
   # Used for debuggin purposes
   def to_string(self) -> None:
     for m in self.items:
-      print(f"{m.path} -> {m.acc}")
+      print(f"Path: {m.path}")
 
   # Get first item
   def first(self) -> Match:
@@ -66,9 +60,15 @@ class MatchList:
   # Get number of matches
   def len(self) -> int:
     return len(self.items)
+  
+  # Check if list has item
+  def has(self, match: Match) -> bool:
+    for m in self.items:
+      if m.path == match.path:
+        return True
+    return False
 
 # Settings
-min_accuracy: float = 0.66
 max_paths: int = 250
 max_options: int = 5
 
@@ -161,26 +161,16 @@ def get_matches(filter: str) -> MatchList:
   matches = MatchList()
   lowfilter = filter.lower()
 
-  def add_match(path: str, acc: float) -> None:
-    for m in matches.items:
-      if m.path == path:
-        return
-
-    match = Match(path, acc)
-    matches.add(match)
-
   for path in paths:
     split = path.split("/")
     parts: List[str] = []
     for part in split:
       parts.append(part)
       lowpart = part.lower()
-      acc = similar(lowpart, lowfilter)
       if lowpart.startswith(lowfilter):
-        add_match("/".join(parts), high_acc(lowfilter, lowpart))
-      else:
-        if acc >= min_accuracy:
-          add_match("/".join(parts), acc)
+        match = Match(path)
+        if not matches.has(match):
+          matches.add(match)
 
   return matches
 
@@ -190,10 +180,6 @@ def update_file(paths: List[str]) -> None:
   file = open(filepath, "w")
   file.write("\n".join(lines).strip())
   file.close()
-
-# Check string similarity from 0 to 1
-def similar(a: str, b: str) -> float:
-  return SequenceMatcher(None, a, b).ratio()
 
 # Remove unecessary characters
 def clean_path(path: str) -> str:
@@ -209,12 +195,6 @@ def show_option(path: str, n: int) -> None:
 def at_home() -> bool:
   return Path(pwd) == Path(Path.home())
 
-# Get an acc that is near max
-# But that depends on length diff
-def high_acc(a: str, b: str) -> float:
-  diff: float = 0.01 * (max(len(a), len(b)) - min(len(a), len(b)))
-  return 0.99 - diff
-
 # Show some information
 def show_info() -> None:
   info = f"""\nezkl is installed and ready to use
@@ -225,7 +205,6 @@ Paths are saved in ezkl/paths.txt
 Use 'z --paths' to show saved paths
 Use 'd' at the prompt to forget paths
 ---------------------------------------------
-Minimum accuracy is set to {min_accuracy}
 paths.txt has {len(paths)}/{max_paths} paths saved\n"""
   print(info)
 
@@ -304,7 +283,7 @@ def jump(keywords: str) -> None:
   for kw in kws:
     matches.items += get_matches(kw).items
 
-  matches.sort(kws, max_options)
+  matches.filter(kws, max_options)
   num = matches.len()
 
   if num > 0:
