@@ -23,7 +23,7 @@ class MatchList:
   # Remove unecessary items
   def filter(self, filters: List[str]) -> None:
     matches: List[Match] = []
-    rstr = ".*" + ".*/".join(filters) + ".*"
+    rstr = ".*" + ".*/.*".join(filters) + ".*"
 
     for m in self.items:
       add = True
@@ -77,24 +77,20 @@ def main() -> None:
   elif mode == "jump":
     path = ""
     matches = MatchList()
+    kws = list(filter(lambda x: x != "", \
+      re.split("\\s|/", keyw)))
 
-    if keyw.startswith("/"):
-      path = clean_path(keyw.replace(" ", ""))
+    for kw in kws:
+      matches.items += get_matches(kw).items \
+        + get_guesses(kw).items
 
-    else:
-      kws = keyw.split(" ")
+    matches.filter(kws)
+    matches.sort()
 
-      for kw in kws:
-        matches.items += get_matches(kw).items \
-          + get_guesses(kw).items
-
-      matches.filter(kws)
-      matches.sort()
-
-      for m in matches.items:
-        if m.path != pwd:
-          path = m.path
-          break
+    for m in matches.items:
+      if m.path != pwd:
+        path = m.path
+        break
 
     show_hints(matches, path)
 
@@ -157,6 +153,7 @@ def forget_path(path: str) -> List[str]:
 # Try to find a matching path
 def get_matches(filter: str) -> MatchList:
   matches = MatchList()
+  lowfilter = filter.lower()
 
   def add_match(path: str, acc: float) -> None:
     for m in matches.items:
@@ -166,13 +163,7 @@ def get_matches(filter: str) -> MatchList:
     match = Match(path, acc)
     matches.items.append(match)
 
-  checkslash = "/" in filter
-  lowfilter = filter.lower()
-
   for path in paths:
-    lowpath = path.lower()
-    if checkslash and lowfilter in lowpath:
-      add_match(path, 0.99)
     split = path.split("/")
     parts: List[str] = []
     for part in split:
@@ -282,6 +273,10 @@ def show_hints(matches: MatchList, path: str) -> None:
         break
   if hinted:
     print(" ")
+
+# Used for debuggin paths
+def dprint(s: str) -> None:
+  print(f"# {s}")
 
 # Program starts here
 if __name__ == "__main__": main()
