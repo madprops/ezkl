@@ -245,13 +245,16 @@ def show_options(matches: MatchList) -> None:
   n = 1
   ans = ""
 
+  eprint("")
+  
   for m in matches.items:
     show_option(m.path, n)
     n += 1
     if n > max_options:
       break
 
-  eprint("Use d to forget path (d3)")
+  eprint("\n[Use d to forget path (d3)]")
+  eprint("[Enter text to search again]\n")
 
   try:
     ans = input().strip()
@@ -266,7 +269,7 @@ def show_options(matches: MatchList) -> None:
     elif re.search("^d\\d+$", ans):
       mode = "forget"
     else:
-      jump(ans)
+      jump(re.sub("^z\\s+", "", ans))
       exit(0)
 
     if mode in ["jump", "forget"]:
