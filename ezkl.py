@@ -223,6 +223,7 @@ Jump around directories. For instance 'z music'
 Directories get remembered by using cd normally
 Paths are saved in ezkl/paths.txt
 Use 'z --paths' to show saved paths
+Use 'd' at the prompt to forget paths
 ---------------------------------------------
 Minimum accuracy is set to {min_accuracy}
 paths.txt has {len(paths)}/{max_paths} paths saved\n"""
@@ -245,16 +246,11 @@ def show_options(matches: MatchList) -> None:
   n = 1
   ans = ""
 
-  eprint("")
-  
   for m in matches.items:
     show_option(m.path, n)
     n += 1
     if n > max_options:
       break
-
-  eprint("\n[Use d to forget path (d3)]")
-  eprint("[Enter text to search again]\n")
 
   try:
     ans = input().strip()

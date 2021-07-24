@@ -20,13 +20,9 @@ And use z to jump to locations
 
 In this example you can see the prompt:
 
-![](https://i.imgur.com/waIQlKF.jpg)
+![](https://i.imgur.com/He8B4cM.jpg)
 
 This appears when there are more than 1 option. Picking an option goes to that directory. Using d + number removes that path from the paths file.
-
-In this example you can see the interactive mode:
-
-![](https://i.imgur.com/7KtP5Sv.jpg)
 
 If the answer in the prompt is not a number or d + number, it will use the  text to search for matches again.
 
