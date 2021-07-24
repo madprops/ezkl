@@ -19,7 +19,7 @@ class Match:
 class MatchList:
   def __init__(self, items: List[Match] = []):
     self.items = items
-  
+
   # Add an item
   def add(self, match: Match) -> None:
     self.items.append(match)
@@ -216,8 +216,8 @@ def similar(a: str, b: str) -> float:
 def clean_path(path: str) -> str:
   return path.rstrip("/")
 
-# Print a path hint
-def path_hint(path: str) -> None:
+# Show a hint
+def show_hint(path: str) -> None:
   CRED = "\033[92m"
   CEND = "\033[0m"
   print(f"{CRED}[Hint]{CEND} {path}")
@@ -239,13 +239,13 @@ def show_info() -> None:
 Jump around directories. For instance 'z music'
 Directories get remembered by using cd normally
 Paths are saved in ezkl/paths.txt
-Use 'z --paths' to print saved paths
+Use 'z --paths' to show saved paths
 ---------------------------------------------
 Minimum accuracy is set to {min_accuracy}
 paths.txt has {len(paths)}/{max_paths} paths saved\n"""
   print(info)
 
-# Print all paths
+# Show all paths
 def show_paths(filter: str) -> None:
   hasfilter = filter != ""
   lowfilter = filter.lower()
@@ -260,9 +260,11 @@ def show_paths(filter: str) -> None:
 def show_hints(matches: MatchList, path: str) -> None:
   if len(matches.items) == 0:
     return
+
   n = 0
   hinted = False
   p = path if len(path) > 0 else pwd
+
   for m in matches.items:
     if m.path != p:
       if p.startswith(f"{m.path}/") \
@@ -271,10 +273,11 @@ def show_hints(matches: MatchList, path: str) -> None:
       if not hinted:
         print(" ")
         hinted = True
-      path_hint(m.path)
+      show_hint(m.path)
       n += 1
       if n == max_hints:
         break
+
   if hinted:
     print(" ")
 
