@@ -101,7 +101,6 @@ def main() -> None:
 
     for kw in kws:
       matches.items += get_matches(kw).items
-      matches.items += get_guesses(kw).items
 
     matches.filter(kws)
     matches.sort()
@@ -195,25 +194,6 @@ def get_matches(filter: str) -> MatchList:
 
   return matches
 
-# Check if path or similar exists in directory
-# It checks current directory and then home
-def get_guesses(p: str) -> MatchList:
-  guesses = MatchList()
-  pths = [p, p.capitalize(), p.lower(), p.upper(), f".{p}"]
-
-  for s in pths:
-    dir = Path(pwd) / Path(s)
-    if dir.is_dir():
-      guesses.add(Match(str(dir), 0.9))
-
-  if not at_home():
-    for s in pths:
-      dir = Path.home() / Path(s)
-      if dir.is_dir():
-        guesses.add(Match(str(dir), 0.9))
-
-  return guesses
-
 # Write paths to file
 def update_file(paths: List[str]) -> None:
   lines: List[str] = paths[0:max_paths]
@@ -272,15 +252,36 @@ def show_paths(filter: str) -> None:
 # Show paths that might be relevant
 def choose_path(matches: MatchList) -> None:
   n = 1
+  ans = ""
+
   for m in matches.items:
     show_hint(m.path, n)
     n += 1
     if n > max_hints:
       break
+
+  eprint("Use d to forget path (d3)")
+  
   try:
-    print(matches.items[int(input()) - 1].path)
+    ans = input().strip()
   except:
     pass
+
+  if ans != "":
+    mode = "normal"
+    if ans.startswith("d"):
+      mode = "forget"
+    num = to_number(ans)
+    item = matches.items[num - 1]
+
+    if mode == "normal":
+      print(item.path)
+    elif mode == "forget":
+      update_file(forget_path(item.path))
+
+# Parse string to number
+def to_number(s: str) -> int:
+  return int(re.sub("[^0-9]", "", s))
 
 # Print to stderr
 def eprint(s: str):
