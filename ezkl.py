@@ -16,7 +16,7 @@ class Match:
 
 # List of matches
 class MatchList:
-  def __init__(self, items: List[Match] = []):
+  def __init__(self, items: List[Match]):
     self.items = items
 
   # Add an item
@@ -158,7 +158,7 @@ def forget_path(path: str, subpaths: bool) -> List[str]:
 
 # Try to find a matching path
 def get_matches(filter: str) -> MatchList:
-  matches = MatchList()
+  matches = MatchList([])
   lowfilter = filter.lower()
 
   for path in paths:
@@ -276,7 +276,7 @@ def goto_dir(path: str) -> None:
 
 # Main jump function
 def jump(keywords: str) -> None:
-  matches = MatchList()
+  matches = MatchList([])
   kws = list(filter(lambda x: x != "", \
     re.split("\\s|/", keywords)))
 
