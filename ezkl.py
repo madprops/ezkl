@@ -265,7 +265,7 @@ def to_number(s: str) -> int:
   return 0
 
 # Print to stderr
-def eprint(s: str):
+def eprint(s: str) -> None:
   print(s, file=stderr)
 
 # Print the path for cd
