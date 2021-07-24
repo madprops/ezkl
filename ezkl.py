@@ -32,7 +32,7 @@ class MatchList:
 
     for m in self.items:
       add = True
-      
+
       if add:
         for m2 in matches:
           if m.path == m2.path:
@@ -51,16 +51,16 @@ class MatchList:
   # Sort the list by accuracy and path level
   def sort(self) -> None:
     self.items.sort(key=lambda x: (-x.acc, x.level()))
-  
+
   # Used for debuggin purposes
   def to_string(self) -> None:
     for m in self.items:
       print(f"{m.path} -> {m.acc}")
-  
+
   # Get first item
   def first(self) -> Match:
     return self.items[0]
-  
+
   # Get number of matches
   def len(self) -> int:
     return len(self.items)
@@ -105,11 +105,12 @@ def main() -> None:
 
     matches.filter(kws)
     matches.sort()
+    num = matches.len()
 
-    if matches.len() > 0:
-      if matches.len() > 1:
+    if num > 0:
+      if num > 1:
         choose_path(matches)
-      elif matches.len():
+      elif num:
         path = matches.first().path
         update_file(filter_path(path))
         print(path)
