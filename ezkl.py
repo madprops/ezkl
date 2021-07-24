@@ -32,11 +32,10 @@ class MatchList:
     for m in self.items:
       add = True
 
-      if add:
-        for m2 in matches:
-          if m.path == m2.path:
-            add = False
-            break
+      for m2 in matches:
+        if m.path == m2.path:
+          add = False
+          break
 
       if add:
         if not re.search(rstr, m.path.lower()):
