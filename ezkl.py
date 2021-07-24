@@ -43,7 +43,6 @@ class MatchList:
   def sort(self) -> None:
     self.items.sort(key=lambda x: (-x.acc, x.level()))
 
-
 # Settings
 min_accuracy: float = 0.66
 max_paths: int = 250
