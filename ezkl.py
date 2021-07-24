@@ -19,6 +19,10 @@ class Match:
 class MatchList:
   def __init__(self, items: List[Match] = []):
     self.items = items
+  
+  # Add an item
+  def add(self, match: Match) -> None:
+    self.items.append(match)
 
   # Remove unecessary items
   def filter(self, filters: List[str]) -> None:
@@ -81,8 +85,8 @@ def main() -> None:
       re.split("\\s|/", keyw)))
 
     for kw in kws:
-      matches.items += get_matches(kw).items \
-        + get_guesses(kw).items
+      matches.items += get_matches(kw).items
+      matches.items += get_guesses(kw).items
 
     matches.filter(kws)
     matches.sort()
@@ -161,7 +165,7 @@ def get_matches(filter: str) -> MatchList:
         return
 
     match = Match(path, acc)
-    matches.items.append(match)
+    matches.add(match)
 
   for path in paths:
     split = path.split("/")
@@ -187,13 +191,13 @@ def get_guesses(p: str) -> MatchList:
   for s in pths:
     dir = Path(pwd) / Path(s)
     if dir.is_dir():
-      guesses.items.append(Match(str(dir), 0.9))
+      guesses.add(Match(str(dir), 0.9))
 
   if not at_home():
     for s in pths:
       dir = Path.home() / Path(s)
       if dir.is_dir():
-        guesses.items.append(Match(str(dir), 0.9))
+        guesses.add(Match(str(dir), 0.9))
 
   return guesses
 
