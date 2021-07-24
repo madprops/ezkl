@@ -16,13 +16,13 @@ And use z to jump to locations
 
 `z something`
 
-![](https://i.imgur.com/fb0YCxH.jpg)
+![](https://i.imgur.com/IFp9xtB.jpg)
 
-In this example you can see the prompt:
+Options appear when there are more than 1 path. 
 
-![](https://i.imgur.com/He8B4cM.jpg)
+Picking an option goes to that directory. 
 
-This appears when there are more than 1 option. Picking an option goes to that directory. Using d + number removes that path from the paths file.
+Using d + number removes that path from the paths file.
 
 If the answer in the prompt is not a number or d + number, it will use the  text to search for matches again.
 
