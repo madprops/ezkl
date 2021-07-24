@@ -96,7 +96,7 @@ def main() -> None:
         path = m.path
         break
 
-    show_hints(matches, path)
+    show_path_hints(matches, path)
 
     if len(path) > 0:
       update_file(filter_path(path))
@@ -256,8 +256,8 @@ def show_paths(filter: str) -> None:
         continue
     print(path)
 
-# Show path hints
-def show_hints(matches: MatchList, path: str) -> None:
+# Show paths that might be relevant
+def show_path_hints(matches: MatchList, path: str) -> None:
   if len(matches.items) == 0:
     return
 
