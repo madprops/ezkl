@@ -163,9 +163,7 @@ def get_matches(filter: str) -> MatchList:
 
   for path in paths:
     split = path.split("/")
-    parts: List[str] = []
     for part in split:
-      parts.append(part)
       lowpart = part.lower()
       if lowpart.startswith(lowfilter):
         match = Match(path)
