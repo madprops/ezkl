@@ -68,7 +68,7 @@ class MatchList:
 # Settings
 min_accuracy: float = 0.66
 max_paths: int = 250
-max_hints: int = 5
+max_options: int = 5
 
 # Globals
 mode: str
@@ -89,7 +89,7 @@ def main() -> None:
     update_file(filter_path(pwd))
 
   elif mode == "forget":
-    update_file(forget_path(keyw))
+    update_file(forget_path(keyw, True))
 
   elif mode == "paths":
     show_paths(keyw)
@@ -108,7 +108,7 @@ def main() -> None:
 
     if num > 0:
       if num > 1:
-        choose_path(matches)
+        show_options(matches)
       elif num:
         path = matches.first().path
         update_file(filter_path(path))
@@ -156,12 +156,17 @@ def filter_path(path: str) -> List[str]:
   return pths
 
 # Remove path and subdirs
-def forget_path(path: str) -> List[str]:
+def forget_path(path: str, subpaths: bool) -> List[str]:
   pths: List[str] = []
 
   for p in paths:
-    if p == path or p.startswith(path + "/"):
-      continue
+    if subpaths:
+      if p == path or p.startswith(path + "/"):
+        continue
+    else:
+      if p == path:
+        continue
+
     pths.append(p)
 
   return pths
@@ -209,8 +214,8 @@ def similar(a: str, b: str) -> float:
 def clean_path(path: str) -> str:
   return path.rstrip("/")
 
-# Show a hint
-def show_hint(path: str, n: int) -> None:
+# Show an option
+def show_option(path: str, n: int) -> None:
   CRED = "\033[92m"
   CEND = "\033[0m"
   eprint(f"{CRED}({n}){CEND} {path}")
@@ -250,18 +255,19 @@ def show_paths(filter: str) -> None:
     print(path)
 
 # Show paths that might be relevant
-def choose_path(matches: MatchList) -> None:
+# Pick one by number. d is used to forget
+def show_options(matches: MatchList) -> None:
   n = 1
   ans = ""
 
   for m in matches.items:
-    show_hint(m.path, n)
+    show_option(m.path, n)
     n += 1
-    if n > max_hints:
+    if n > max_options:
       break
 
   eprint("Use d to forget path (d3)")
-  
+
   try:
     ans = input().strip()
   except:
@@ -273,11 +279,11 @@ def choose_path(matches: MatchList) -> None:
       mode = "forget"
     num = to_number(ans)
     item = matches.items[num - 1]
-
     if mode == "normal":
+      update_file(filter_path(item.path))
       print(item.path)
     elif mode == "forget":
-      update_file(forget_path(item.path))
+      update_file(forget_path(item.path, False))
 
 # Parse string to number
 def to_number(s: str) -> int:
