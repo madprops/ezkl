@@ -158,10 +158,11 @@ def get_matches(filter: str) -> MatchList:
   matches = MatchList()
 
   def add_match(path: str, acc: float) -> None:
-    for match in matches.items:
-      if match.path == path:
+    for m in matches.items:
+      if m.path == path:
         return
-    match: Match = Match(path, acc)
+
+    match = Match(path, acc)
     matches.items.append(match)
 
   checkslash = "/" in filter
