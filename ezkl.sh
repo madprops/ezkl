@@ -19,7 +19,7 @@ complete -A directory cd
 function z () {
   # Check if there are no arguments
   if [ -z "$1" ]; then
-    python3 "${CCDIR}"/ezkl.py info
+    python3 "${CCDIR}"/ezkl.py top
   else
     # Show paths if command is --paths
     # Second argument is used as filter

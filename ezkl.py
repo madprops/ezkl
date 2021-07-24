@@ -84,8 +84,8 @@ def main() -> None:
   get_args()
   get_paths()
 
-  if mode == "info":
-    show_info()
+  if mode == "top":
+    show_top()
 
   elif mode == "remember":
     update_file(filter_path(pwd))
@@ -108,7 +108,7 @@ def get_args() -> None:
   mode = args[0] if len(args) > 0 else ""
   keyw = " ".join(args[1:]) if len(args) > 1 else ""
 
-  if mode not in ["remember", "forget", "jump", "info", "paths"]:
+  if mode not in ["remember", "forget", "jump", "top", "paths"]:
     exit(0)
 
   if mode in ["forget", "jump"] and keyw == "":
@@ -183,29 +183,6 @@ def update_file(paths: List[str]) -> None:
 def clean_path(path: str) -> str:
   return path.rstrip("/")
 
-# Show an option
-def show_option(path: str, n: int) -> None:
-  CRED = "\033[92m"
-  CEND = "\033[0m"
-  eprint(f"{CRED}({n}){CEND} {path}")
-
-# Check if pwd is set to home
-def at_home() -> bool:
-  return Path(pwd) == Path(Path.home())
-
-# Show some information
-def show_info() -> None:
-  info = f"""\nezkl is installed and ready to use
----------------------------------------------
-Jump around directories. For instance 'z music'
-Directories get remembered by using cd normally
-Paths are saved in ezkl/paths.txt
-Use 'z --paths' to show saved paths
-Use 'd' at the prompt to forget paths
----------------------------------------------
-paths.txt has {len(paths)}/{max_paths} paths saved\n"""
-  print(info)
-
 # Show all paths
 def show_paths(filter: str) -> None:
   hasfilter = filter != ""
@@ -216,6 +193,12 @@ def show_paths(filter: str) -> None:
       if lowfilter not in path.lower():
         continue
     print(path)
+
+# Show an option
+def show_option(path: str, n: int) -> None:
+  CRED = "\033[92m"
+  CEND = "\033[0m"
+  eprint(f"{CRED}({n}){CEND} {path}")
 
 # Show paths that might be relevant
 # Pick one by number. d is used to forget
@@ -290,6 +273,13 @@ def jump(keywords: str) -> None:
     else:
       path = matches.first().path
       goto_dir(path)
+
+# Show the first paths
+def show_top() -> None:
+  matches = MatchList()
+  for path in paths[0:max_options]:
+    matches.add(Match(path))
+  show_options(matches)
 
 # Program starts here
 if __name__ == "__main__": main()
