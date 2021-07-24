@@ -15,15 +15,18 @@ class Match:
   def level(self) -> int:
     return len(self.path.split("/"))
 
-  @staticmethod
-  def filter(matches: "List[Match]", filters: List[str]) -> "List[Match]":
-    matches2: List[Match] = []
+# List of matches
+class MatchList:
+  def __init__(self, items: List[Match] = []):
+    self.items = items
+
+  def filter(self, filters: List[str]) -> None:
+    matches: List[Match] = []
     rstr = ".*" + ".*/".join(filters) + ".*"
 
-    matches.sort(key=lambda x: (-x.acc, x.level()))
-    for m in matches:
+    for m in self.items:
       add = True
-      for m2 in matches2:
+      for m2 in matches:
         if m.path == m2.path:
           add = False
           break
@@ -32,13 +35,13 @@ class Match:
         add = False
 
       if add:
-        matches2.append(m)
-    return matches2
+        matches.append(m)
 
-  @staticmethod
-  def sort(matches: "List[Match]") -> "List[Match]":
-    matches.sort(key=lambda x: (-x.acc, x.level()))
-    return matches
+    self.items = matches
+
+  def sort(self) -> None:
+    self.items.sort(key=lambda x: (-x.acc, x.level()))
+
 
 # Settings
 min_accuracy: float = 0.66
@@ -71,21 +74,22 @@ def main() -> None:
 
   elif mode == "jump":
     path = ""
-    matches: List[Match] = []
+    matches = MatchList()
 
     if keyw.startswith("/"):
       path = clean_path(keyw.replace(" ", ""))
 
     else:
-      kw = keyw.split(" ")
+      kws = keyw.split(" ")
 
-      for w in kw:
-        matches += get_matches(w) \
-          + get_guesses(w)
+      for kw in kws:
+        matches.items += get_matches(kw).items \
+          + get_guesses(kw).items
 
-      matches = Match.sort(Match.filter(matches, kw))
+      matches.filter(kws)
+      matches.sort()
 
-      for m in matches:
+      for m in matches.items:
         if m.path != pwd:
           path = m.path
           break
@@ -149,15 +153,15 @@ def forget_path(path: str) -> List[str]:
   return pths
 
 # Try to find a matching path
-def get_matches(filter: str) -> List[Match]:
-  matches: List[Match] = []
+def get_matches(filter: str) -> MatchList:
+  matches = MatchList()
 
   def add_match(path: str, acc: float) -> None:
-    for match in matches:
+    for match in matches.items:
       if match.path == path:
         return
     match: Match = Match(path, acc)
-    matches.append(match)
+    matches.items.append(match)
 
   checkslash = "/" in filter
   lowfilter = filter.lower()
@@ -182,20 +186,20 @@ def get_matches(filter: str) -> List[Match]:
 
 # Check if path or similar exists in directory
 # It checks current directory and then home
-def get_guesses(p: str) -> List[Match]:
-  guesses: list[Match] = []
+def get_guesses(p: str) -> MatchList:
+  guesses = MatchList()
   pths = [p, p.capitalize(), p.lower(), p.upper(), f".{p}"]
 
   for s in pths:
     dir = Path(pwd) / Path(s)
     if dir.is_dir():
-      guesses.append(Match(str(dir), 0.9))
+      guesses.items.append(Match(str(dir), 0.9))
 
   if not at_home():
     for s in pths:
       dir = Path.home() / Path(s)
       if dir.is_dir():
-        guesses.append(Match(str(dir), 0.9))
+        guesses.items.append(Match(str(dir), 0.9))
 
   return guesses
 
@@ -255,13 +259,13 @@ def show_paths(filter: str) -> None:
     print(path)
 
 # Show path hints
-def show_hints(matches: List[Match], path: str) -> None:
-  if len(matches) == 0:
+def show_hints(matches: MatchList, path: str) -> None:
+  if len(matches.items) == 0:
     return
   n = 0
   hinted = False
   p = path if len(path) > 0 else pwd
-  for m in matches:
+  for m in matches.items:
     if m.path != p:
       if p.startswith(f"{m.path}/") \
         or m.path.startswith(f"{p}/"):
