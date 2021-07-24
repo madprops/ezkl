@@ -31,8 +31,9 @@ class MatchList:
           add = False
           break
 
-      if not re.search(rstr, m.path.lower()):
-        add = False
+      if add:
+        if not re.search(rstr, m.path.lower()):
+          add = False
 
       if add:
         matches.append(m)
