@@ -60,7 +60,7 @@ class MatchList:
   # Get number of matches
   def len(self) -> int:
     return len(self.items)
-  
+
   # Check if list has item
   def has(self, match: Match) -> bool:
     for m in self.items:
