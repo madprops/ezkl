@@ -20,6 +20,7 @@ class MatchList:
   def __init__(self, items: List[Match] = []):
     self.items = items
 
+  # Remove unecessary items
   def filter(self, filters: List[str]) -> None:
     matches: List[Match] = []
     rstr = ".*" + ".*/".join(filters) + ".*"
@@ -40,6 +41,7 @@ class MatchList:
 
     self.items = matches
 
+  # Sort the list by accuracy and path level
   def sort(self) -> None:
     self.items.sort(key=lambda x: (-x.acc, x.level()))
 
