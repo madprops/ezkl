@@ -146,6 +146,7 @@ class Prompt:
   def last(self) -> int:
     return len(self.options) - 1
   
+  # Up arrow
   def on_up(self) -> None:
     self.pos -= 1
     if self.pos < 0:
