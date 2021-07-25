@@ -132,9 +132,9 @@ class Prompt:
           break
         elif char == ord('d'):
           self.forget()
-        elif char == curses.KEY_UP:
+        elif char in [curses.KEY_UP, curses.KEY_BACKSPACE, ord('k')]:
           self.on_up()
-        elif char == curses.KEY_DOWN:
+        elif char in [curses.KEY_UP, ord(' '), ord('j')]:
           self.on_down()
         elif char == 10:
           self.on_enter()
