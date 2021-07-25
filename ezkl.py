@@ -86,7 +86,7 @@ class Prompt:
     self.pos = 0
 
   # Start the curses screen
-  def start(self):
+  def start(self) -> None:
     self.screen = curses.initscr()
     self.screen.keypad(True)
     curses.noecho()
@@ -108,7 +108,7 @@ class Prompt:
 
   # Forget options from paths
   # and from the current options
-  def forget(self):
+  def forget(self) -> None:
     if self.pos < 0 or self.pos > len(self.options) - 1:
       return
 
@@ -124,7 +124,7 @@ class Prompt:
     self.refresh()
 
   # Key detection loop
-  def key_listener(self):
+  def key_listener(self) -> None:
     try:
       while True:
         char = self.screen.getch()
@@ -149,13 +149,13 @@ class Prompt:
     except:
       curses.endwin()
       exit(1)
-  
+
   # Index of the last option
-  def last(self):
+  def last(self) -> int:
     return len(self.options) - 1
 
   # When an option gets selected
-  def on_enter(self):
+  def on_enter(self) -> None:
     update_paths(self.options[self.pos])
 
 # Settings
@@ -218,7 +218,7 @@ def get_paths() -> None:
   pwd = clean_path(str(getenv("PWD")))
 
 # Put path in first line
-def filter_path(path: str):
+def filter_path(path: str) -> None:
   global paths
   pths = [path]
 
@@ -230,7 +230,7 @@ def filter_path(path: str):
   paths = pths
 
 # Remove path and subdirs
-def forget_path(path: str, subpaths: bool):
+def forget_path(path: str, subpaths: bool) -> None:
   global paths
   pths: List[str] = []
 
@@ -294,7 +294,7 @@ def show_top() -> None:
 def jump() -> None:
   keywords = list(filter(lambda x: x != "", \
     re.split("\\s|/", keyw)))
-  
+
   if len(keywords) == 0:
     show_top()
     exit(0)
