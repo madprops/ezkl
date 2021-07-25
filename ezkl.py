@@ -279,6 +279,9 @@ def jump(keywords: str) -> None:
     matches = MatchList()
     kws = list(filter(lambda x: x != "", \
       re.split("\\s|/", keywords)))
+    
+    if len(kws) == 0:
+      exit(1)
 
     for kw in kws:
       matches.items += get_matches(kw).items
