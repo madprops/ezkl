@@ -144,6 +144,7 @@ class Prompt:
         pass
     except:
       curses.endwin()
+      exit(1)
 
   # When an option gets selected
   def on_enter(self):
