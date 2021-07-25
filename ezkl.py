@@ -181,8 +181,9 @@ def main() -> None:
   get_paths()
 
   if mode == "remember":
-    filter_path(pwd)
-    update_file()
+    if pwd != "":
+      filter_path(pwd)
+      update_file()
 
   elif mode == "forget":
     forget_path(keyw, True)
