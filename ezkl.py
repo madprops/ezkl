@@ -28,7 +28,7 @@ class MatchList:
   def filter(self, filters: List[str], max: int) -> None:
     matches: List[Match] = []
     lowfilters = map(lambda x: x.lower(), filters)
-    rstr = ".*" + ".*/.*".join(lowfilters) + ".*"
+    rstr = ".*/" + ".*/".join(lowfilters) + ".*"
 
     for m in self.items:
       add = True
@@ -145,14 +145,14 @@ class Prompt:
   # Index of the last option
   def last(self) -> int:
     return len(self.options) - 1
-  
+
   # Up arrow
   def on_up(self) -> None:
     self.pos -= 1
     if self.pos < 0:
       self.pos = self.last()
     self.refresh()
-  
+
   # Down arrow
   def on_down(self) -> None:
     self.pos += 1
