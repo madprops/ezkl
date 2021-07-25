@@ -184,7 +184,7 @@ def main() -> None:
     update_file()
 
   elif mode == "jump":
-    jump(keyw)
+    jump()
 
 # Get arguments. Might exit here
 def get_args() -> None:
@@ -291,20 +291,20 @@ def show_top() -> None:
   Prompt(paths[0:max_options]).start()
 
 # Main jump function
-def jump(keywords: str) -> None:
-  kws = list(filter(lambda x: x != "", \
-    re.split("\\s|/", keywords)))
+def jump() -> None:
+  keywords = list(filter(lambda x: x != "", \
+    re.split("\\s|/", keyw)))
   
-  if len(kws) == 0:
+  if len(keywords) == 0:
     show_top()
     exit(0)
 
   matches = MatchList()
 
-  for kw in kws:
+  for kw in keywords:
     matches.items += get_matches(kw).items
 
-  matches.filter(kws, max_options)
+  matches.filter(keywords, max_options)
 
   if matches.len() > 0:
     if matches.len() > 1:
