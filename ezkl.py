@@ -115,6 +115,11 @@ class Prompt:
     forget_path(self.options[self.pos], False)
     update_file()
     del self.options[self.pos]
+
+    if len(self.options) == 0:
+      curses.endwin()
+      exit(1)
+
     self.pos = min(self.pos, len(self.options) - 1)
     self.refresh()
 
