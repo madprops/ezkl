@@ -294,34 +294,29 @@ def update_paths(path: str) -> None:
   else:
     exit(1)
 
-# Show the first paths
-def show_top() -> None:
-  Prompt(paths[0:max_options]).start()
-
 # Main jump function
 def jump() -> None:
   keywords = list(filter(lambda x: x != "", \
     re.split("\\s|/", keyw)))
 
   if len(keywords) == 0:
-    show_top()
-    exit(1)
-
-  matches = MatchList()
-
-  for kw in keywords:
-    matches.items += get_matches(kw).items
-
-  matches.filter(keywords, max_options)
-
-  if matches.len() > 0:
-    if matches.len() > 1:
-      Prompt(matches.slice(max_options)).start()
-    else:
-      path = matches.first().path
-      update_paths(path)
+    Prompt(paths[0:max_options]).start()
   else:
-    exit(1)
+    matches = MatchList()
+
+    for kw in keywords:
+      matches.items += get_matches(kw).items
+
+    matches.filter(keywords, max_options)
+
+    if matches.len() > 0:
+      if matches.len() > 1:
+        Prompt(matches.slice(max_options)).start()
+      else:
+        path = matches.first().path
+        update_paths(path)
+    else:
+      exit(1)
 
 # Program starts here
 if __name__ == "__main__": main()
