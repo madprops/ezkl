@@ -85,17 +85,13 @@ def main() -> None:
   get_args()
   get_paths()
 
-  if mode == "top":
-    show_top()
-
-  elif mode == "remember":
-    update_file(filter_path(pwd))
+  if mode == "remember":
+    filter_path(pwd)
+    update_file()
 
   elif mode == "forget":
-    update_file(forget_path(keyw, True))
-
-  elif mode == "paths":
-    show_paths(keyw)
+    forget_path(keyw, True)
+    update_file()
 
   elif mode == "jump":
     jump(keyw)
@@ -109,10 +105,10 @@ def get_args() -> None:
   mode = args[0] if len(args) > 0 else ""
   keyw = " ".join(args[1:]) if len(args) > 1 else ""
 
-  if mode not in ["remember", "forget", "jump", "top", "paths"]:
+  if mode not in ["remember", "forget", "jump"]:
     exit(1)
 
-  if mode in ["forget", "jump"] and keyw == "":
+  if mode in ["forget"] and keyw == "":
     exit(1)
 
 # Read the paths file plus other paths
@@ -132,7 +128,8 @@ def get_paths() -> None:
   pwd = clean_path(str(getenv("PWD")))
 
 # Put path in first line
-def filter_path(path: str) -> List[str]:
+def filter_path(path: str):
+  global paths
   pths = [path]
 
   for p in paths:
@@ -140,10 +137,11 @@ def filter_path(path: str) -> List[str]:
       continue
     pths.append(p)
 
-  return pths
+  paths = pths
 
 # Remove path and subdirs
-def forget_path(path: str, subpaths: bool) -> List[str]:
+def forget_path(path: str, subpaths: bool):
+  global paths
   pths: List[str] = []
 
   for p in paths:
@@ -156,7 +154,7 @@ def forget_path(path: str, subpaths: bool) -> List[str]:
 
     pths.append(p)
 
-  return pths
+  paths = pths
 
 # Try to find a matching path
 def get_matches(filter: str) -> MatchList:
@@ -175,7 +173,7 @@ def get_matches(filter: str) -> MatchList:
   return matches
 
 # Write paths to file
-def update_file(paths: List[str]) -> None:
+def update_file() -> None:
   lines: List[str] = paths[0:max_paths]
   file = open(filepath, "w")
   file.write("\n".join(lines).strip())
@@ -185,40 +183,40 @@ def update_file(paths: List[str]) -> None:
 def clean_path(path: str) -> str:
   return path.rstrip("/")
 
-# Show all paths
-def show_paths(filter: str) -> None:
-  hasfilter = filter != ""
-  lowfilter = filter.lower()
-
-  for path in paths:
-    if hasfilter:
-      if lowfilter not in path.lower():
-        continue
-    print(path)
-
 # Show paths that might be relevant
 # Pick one by number. d is used to forget
 def show_options(matches: MatchList) -> None:
-  num = len(matches.items)
   screen = curses.initscr()
   screen.keypad(True)
   curses.noecho()
   curses.curs_set(0)
-
-  for i, m in enumerate(matches.items[0:max_options]):
-    screen.addstr(i, 0, m.path)
-
-  screen.refresh()
   pos = 0
 
-  def highlight() -> None:
+  def refresh() -> None:
+    screen.clear()
+
     for i, m in enumerate(matches.items[0:max_options]):
       if i == pos:
         screen.addstr(i, 0, m.path, curses.A_UNDERLINE)
       else:
         screen.addstr(i, 0, m.path, curses.A_NORMAL)
 
-  highlight()
+  def forget() -> None:
+    nonlocal pos
+
+    if pos < 0 or pos > len(matches.items) -1:
+      return
+
+    forget_path(matches.items[pos].path, False)
+    update_file()
+    del matches.items[pos]
+    pos = min(pos, num() - 1)
+    refresh()
+
+  def num() -> int:
+    return min(len(matches.items), max_options)
+
+  refresh()
   enter = False
 
   try:
@@ -226,18 +224,18 @@ def show_options(matches: MatchList) -> None:
       char = screen.getch()
       if char == ord('q'):
         break
+      elif char == ord('d'):
+        forget()
       elif char == curses.KEY_UP:
         pos = (pos - 1) if pos > 0 else pos
-        highlight()
+        refresh()
       elif char == curses.KEY_DOWN:
-        pos = (pos + 1) if pos < num -1 else pos
-        highlight()
+        pos = (pos + 1) if pos < num() - 1 else pos
+        refresh()
       elif char == 10:
         enter = True
         break
   except:
-    curses.nocbreak()
-    curses.echo()
     curses.endwin()
 
   curses.endwin()
@@ -256,33 +254,33 @@ def to_number(s: str) -> int:
 # Save the paths file
 def update_paths(path: str) -> None:
   if Path(path) != Path(pwd):
-    update_file(filter_path(path))
+    filter_path(path)
+    update_file()
 
 # Main jump function
 def jump(keywords: str) -> None:
-  matches = MatchList()
-  kws = list(filter(lambda x: x != "", \
-    re.split("\\s|/", keywords)))
+  if keywords == "":
+    matches = MatchList()
+    for path in paths[0:max_options]:
+      matches.add(Match(path))
+    show_options(matches)
+  else:
+    matches = MatchList()
+    kws = list(filter(lambda x: x != "", \
+      re.split("\\s|/", keywords)))
 
-  for kw in kws:
-    matches.items += get_matches(kw).items
+    for kw in kws:
+      matches.items += get_matches(kw).items
 
-  matches.filter(kws, max_options)
-  num = matches.len()
+    matches.filter(kws, max_options)
+    num = matches.len()
 
-  if num > 0:
-    if num > 1:
-      show_options(matches)
-    else:
-      path = matches.first().path
-      update_paths(path)
-
-# Show the first paths
-def show_top() -> None:
-  matches = MatchList()
-  for path in paths[0:max_options]:
-    matches.add(Match(path))
-  show_options(matches)
+    if num > 0:
+      if num > 1:
+        show_options(matches)
+      else:
+        path = matches.first().path
+        update_paths(path)
 
 # Program starts here
 if __name__ == "__main__": main()

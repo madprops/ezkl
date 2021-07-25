@@ -17,21 +17,14 @@ function cd () {
 complete -A directory cd
 
 function z () {
-  # Check if there are no arguments
-  if [ -z "$1" ]; then
-    python3 "${CCDIR}"/ezkl.py top &&
-    path=$(head -n 1 "${CCDIR}/paths.txt") &&
-    builtin cd "$path"
+  # Find a path to cd to
+  python3 "${CCDIR}"/ezkl.py jump "$@" &&
+  path=$(head -n 1 "${CCDIR}/paths.txt") &&
+  builtin cd "$path"
+  if [ $? -eq 0 ]; then
+    :
   else
-    # Show paths if command is --paths
-    # Second argument is used as filter
-    if [[ "$1" == "--paths" ]]; then
-      python3 "${CCDIR}"/ezkl.py paths "$2"
-    else
-      # Else find a path to jump to
-      python3 "${CCDIR}"/ezkl.py jump "$@" &&
-      path=$(head -n 1 "${CCDIR}/paths.txt") &&
-      builtin cd "$path"
-    fi
+    # If cd was not ok then forget the path
+    python3 "${CCDIR}"/ezkl.py forget "$path"
   fi
 }
