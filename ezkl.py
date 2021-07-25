@@ -288,14 +288,15 @@ def jump(keywords: str) -> None:
       matches.items += get_matches(kw).items
 
     matches.filter(kws, max_options)
-    num = matches.len()
 
-    if num > 0:
-      if num > 1:
+    if matches.len() > 0:
+      if matches.len() > 1:
         Prompt(matches.slice(max_options)).start()
       else:
         path = matches.first().path
         update_paths(path)
+    else:
+      exit(1)
 
 # Program starts here
 if __name__ == "__main__": main()
