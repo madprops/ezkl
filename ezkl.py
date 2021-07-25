@@ -1,5 +1,6 @@
 # Imports
 import re
+import curses
 from sys import argv
 from os import getenv
 from typing import List
@@ -69,7 +70,7 @@ class MatchList:
 
 # Settings
 max_paths: int = 250
-max_options: int = 5
+max_options: int = 10
 
 # Globals
 mode: str
@@ -195,49 +196,55 @@ def show_paths(filter: str) -> None:
         continue
     print(path)
 
-# Show an option
-def format_option(path: str, n: int) -> str:
-  CRED = "\033[92m"
-  CEND = "\033[0m"
-  return f"{CRED}({n}){CEND} {path}"
-
 # Show paths that might be relevant
 # Pick one by number. d is used to forget
 def show_options(matches: MatchList) -> None:
-  n = 1
-  ans = ""
+  num = len(matches.items)
+  screen = curses.initscr()
+  screen.keypad(True)
+  curses.noecho()
+  curses.curs_set(0)
 
-  for m in matches.items:
-    print(format_option(m.path, n))
-    n += 1
-    if n > max_options:
-      break
+  for i, m in enumerate(matches.items[0:max_options]):
+    screen.addstr(i, 0, m.path)
   
+  screen.refresh()
+  pos = 0
+
+  def highlight():
+    for i, m in enumerate(matches.items[0:max_options]):
+      if i == pos:
+        screen.addstr(i, 0, m.path, curses.A_UNDERLINE)
+      else:
+        screen.addstr(i, 0, m.path, curses.A_NORMAL)
+  
+  highlight()
+  enter = False
+
   try:
-    ans = input()
+    while True:
+      char = screen.getch()
+      if char == ord('q'):
+        break      
+      elif char == curses.KEY_UP: 
+        pos = (pos - 1) if pos > 0 else pos
+        highlight()
+      elif char == curses.KEY_DOWN:
+        pos = (pos + 1) if pos < num -1 else pos
+        highlight()
+      elif char == 10:
+        enter = True
+        break
   except:
-    exit(1)
+    curses.nocbreak()
+    curses.echo()
+    curses.endwin()
+  
+  curses.endwin()
+  if not enter: exit(1)
 
-  if ans == "": exit(1)
-  mode = ""
-
-  if re.search("^\\d+$", ans):
-    mode = "jump"
-  elif re.search("^d\\d+$", ans):
-    mode = "forget"
-  else:
-    jump(re.sub("^z\\s+", "", ans))
-    exit(0)
-
-  if mode in ["jump", "forget"]:
-    num = to_number(ans)
-
-    if num > 0 and num <= len(matches.items):
-      item = matches.items[num - 1]
-      if mode == "jump":
-        update_path(item.path)
-      elif mode == "forget":
-        update_file(forget_path(item.path, False))
+  m = matches.items[pos]
+  update_paths(m.path)
 
 # Parse string to number
 def to_number(s: str) -> int:
@@ -246,15 +253,10 @@ def to_number(s: str) -> int:
     return int(num)
   return 0
 
-# Save the path to an env variable
-def update_path(path: str) -> None:
+# Save the paths file
+def update_paths(path: str) -> None:
   if Path(path) != Path(pwd):
     update_file(filter_path(path))
-    fpath = Path(thispath) / Path("ezpath")
-    fpath.touch(exist_ok=True)
-    file = open(fpath, "w")
-    file.write(path)
-    file.close()
 
 # Main jump function
 def jump(keywords: str) -> None:
@@ -273,7 +275,7 @@ def jump(keywords: str) -> None:
       show_options(matches)
     else:
       path = matches.first().path
-      update_path(path)
+      update_paths(path)
 
 # Show the first paths
 def show_top() -> None:

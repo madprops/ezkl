@@ -20,7 +20,7 @@ function z () {
   # Check if there are no arguments
   if [ -z "$1" ]; then
     python3 "${CCDIR}"/ezkl.py top &&
-    path=$(cat "${CCDIR}/ezpath") &&
+    path=$(head -n 1 "${CCDIR}/paths.txt") &&
     builtin cd "$path"
   else
     # Show paths if command is --paths
@@ -30,7 +30,7 @@ function z () {
     else
       # Else find a path to jump to
       python3 "${CCDIR}"/ezkl.py jump "$@" &&
-      path=$(cat "${CCDIR}/ezpath") &&
+      path=$(head -n 1 "${CCDIR}/paths.txt") &&
       builtin cd "$path"
     fi
   fi
