@@ -292,10 +292,6 @@ def show_top() -> None:
 
 # Main jump function
 def jump(keywords: str) -> None:
-  if keywords == "":
-    show_top()
-    exit(0)
-
   kws = list(filter(lambda x: x != "", \
     re.split("\\s|/", keywords)))
   
@@ -304,7 +300,7 @@ def jump(keywords: str) -> None:
     exit(0)
 
   matches = MatchList()
-  
+
   for kw in kws:
     matches.items += get_matches(kw).items
 
