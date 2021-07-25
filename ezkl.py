@@ -298,6 +298,10 @@ def update_paths(path: str) -> None:
 
 # Main jump function
 def jump() -> None:
+  if len(paths) == 0:
+    print("No paths remembered yet")
+    exit(1)
+
   keywords = list(filter(lambda x: x != "", \
     re.split("\\s|/", keyw)))
 
