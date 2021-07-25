@@ -134,7 +134,7 @@ class Prompt:
           self.forget()
         elif char in [curses.KEY_UP, curses.KEY_BACKSPACE, ord('k')]:
           self.on_up()
-        elif char in [curses.KEY_UP, ord(' '), ord('j')]:
+        elif char in [curses.KEY_DOWN, ord(' '), ord('j')]:
           self.on_down()
         elif char == 10:
           self.on_enter()
