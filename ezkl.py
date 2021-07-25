@@ -48,6 +48,15 @@ class MatchList:
 
     self.items = matches
 
+  # Get a slice of raw paths
+  def slice(self, max: int) -> List[str]:
+    paths: List[str] = []
+
+    for m in self.items[0:max]:
+      paths.append(m.path)
+
+    return paths
+
   # Used for debuggin purposes
   def to_string(self) -> None:
     for m in self.items:
@@ -67,6 +76,65 @@ class MatchList:
       if m.path == match.path:
         return True
     return False
+
+# Show relevant paths to pick from
+# Up/Down arrows and Enter
+class Prompt:
+  def __init__(self, options: List[str]) -> None:
+    self.options = options
+    self.pos = 0
+
+  def start(self):
+    self.screen = curses.initscr()
+    self.screen.keypad(True)
+    curses.noecho()
+    curses.curs_set(0)
+    self.refresh()
+    self.key_listener()
+    curses.endwin()
+
+  def refresh(self) -> None:
+    self.screen.clear()
+
+    for i, path in enumerate(self.options):
+      if i == self.pos:
+        self.screen.addstr(i, 0, path, curses.A_UNDERLINE)
+      else:
+        self.screen.addstr(i, 0, path, curses.A_NORMAL)
+
+  def forget(self):
+    if self.pos < 0 or self.pos > len(self.options) - 1:
+      return
+
+    forget_path(self.options[self.pos], False)
+    update_file()
+    del self.options[self.pos]
+    self.pos = min(self.pos, len(self.options) - 1)
+    self.refresh()
+
+  def key_listener(self):
+    try:
+      while True:
+        char = self.screen.getch()
+        if char == ord('q'):
+          break
+        elif char == ord('d'):
+          self.forget()
+        elif char == curses.KEY_UP:
+          self.pos = (self.pos - 1) if self.pos > 0 else self.pos
+          self.refresh()
+        elif char == curses.KEY_DOWN:
+          self.pos = (self.pos + 1) if self.pos < len(self.options) - 1 else self.pos
+          self.refresh()
+        elif char == 10:
+          self.on_enter()
+          break
+        pass
+    except:
+      curses.endwin()
+
+  def on_enter(self):
+    update_paths(self.options[self.pos])
 
 # Settings
 max_paths: int = 250
@@ -183,67 +251,6 @@ def update_file() -> None:
 def clean_path(path: str) -> str:
   return path.rstrip("/")
 
-# Show paths that might be relevant
-# Pick one by number. d is used to forget
-def show_options(matches: MatchList) -> None:
-  screen = curses.initscr()
-  screen.keypad(True)
-  curses.noecho()
-  curses.curs_set(0)
-  pos = 0
-
-  def refresh() -> None:
-    screen.clear()
-
-    for i, m in enumerate(matches.items[0:max_options]):
-      if i == pos:
-        screen.addstr(i, 0, m.path, curses.A_UNDERLINE)
-      else:
-        screen.addstr(i, 0, m.path, curses.A_NORMAL)
-
-  def forget() -> None:
-    nonlocal pos
-
-    if pos < 0 or pos > len(matches.items) -1:
-      return
-
-    forget_path(matches.items[pos].path, False)
-    update_file()
-    del matches.items[pos]
-    pos = min(pos, num() - 1)
-    refresh()
-
-  def num() -> int:
-    return min(len(matches.items), max_options)
-
-  refresh()
-  enter = False
-
-  try:
-    while True:
-      char = screen.getch()
-      if char == ord('q'):
-        break
-      elif char == ord('d'):
-        forget()
-      elif char == curses.KEY_UP:
-        pos = (pos - 1) if pos > 0 else pos
-        refresh()
-      elif char == curses.KEY_DOWN:
-        pos = (pos + 1) if pos < num() - 1 else pos
-        refresh()
-      elif char == 10:
-        enter = True
-        break
-  except:
-    curses.endwin()
-
-  curses.endwin()
-  if not enter: exit(1)
-
-  m = matches.items[pos]
-  update_paths(m.path)
-
 # Parse string to number
 def to_number(s: str) -> int:
   num = re.sub("[^0-9]", "", s)
@@ -260,10 +267,7 @@ def update_paths(path: str) -> None:
 # Main jump function
 def jump(keywords: str) -> None:
   if keywords == "":
-    matches = MatchList()
-    for path in paths[0:max_options]:
-      matches.add(Match(path))
-    show_options(matches)
+    Prompt(paths[0:max_options]).start()
   else:
     matches = MatchList()
     kws = list(filter(lambda x: x != "", \
@@ -277,7 +281,7 @@ def jump(keywords: str) -> None:
 
     if num > 0:
       if num > 1:
-        show_options(matches)
+        Prompt(matches.slice(max_options)).start()
       else:
         path = matches.first().path
         update_paths(path)
