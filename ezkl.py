@@ -133,30 +133,35 @@ class Prompt:
         elif char == ord('d'):
           self.forget()
         elif char == curses.KEY_UP:
-          self.pos -= 1
-          if self.pos < 0:
-            self.pos = self.last()
-          self.refresh()
+          self.on_up()
         elif char == curses.KEY_DOWN:
-          self.pos += 1
-          if self.pos > self.last():
-            self.pos = 0
-          self.refresh()
+          self.on_down()
         elif char == 10:
           self.on_enter()
-        pass
+          break
     except:
       curses.endwin()
-      exit(1)
 
   # Index of the last option
   def last(self) -> int:
     return len(self.options) - 1
+  
+  def on_up(self):
+    self.pos -= 1
+    if self.pos < 0:
+      self.pos = self.last()
+    self.refresh()
+  
+  # Down arrow
+  def on_down(self):
+    self.pos += 1
+    if self.pos > self.last():
+      self.pos = 0
+    self.refresh()
 
   # When an option gets selected
   def on_enter(self) -> None:
     update_paths(self.options[self.pos])
-    exit(0)
 
 # Settings
 max_paths: int = 250
@@ -285,6 +290,7 @@ def update_paths(path: str) -> None:
   if Path(path) != Path(pwd):
     filter_path(path)
     update_file()
+    exit(0)
   else:
     exit(1)
 
@@ -299,7 +305,7 @@ def jump() -> None:
 
   if len(keywords) == 0:
     show_top()
-    exit(0)
+    exit(1)
 
   matches = MatchList()
 
