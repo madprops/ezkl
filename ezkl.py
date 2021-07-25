@@ -146,14 +146,14 @@ class Prompt:
   def last(self) -> int:
     return len(self.options) - 1
   
-  def on_up(self):
+  def on_up(self) -> None:
     self.pos -= 1
     if self.pos < 0:
       self.pos = self.last()
     self.refresh()
   
   # Down arrow
-  def on_down(self):
+  def on_down(self) -> None:
     self.pos += 1
     if self.pos > self.last():
       self.pos = 0
