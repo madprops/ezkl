@@ -15,8 +15,8 @@ function cd () {
 complete -A directory cd
 
 function z () {
-  # Find a path to cd to
   path=""
+  # Find a path to cd to
   python3 "${CCDIR}"/ezkl.py jump "$@" &&
   path=$(head -n 1 "${CCDIR}/paths.txt")
   # Check if path is empty

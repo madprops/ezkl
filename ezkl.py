@@ -144,7 +144,6 @@ class Prompt:
           self.refresh()
         elif char == 10:
           self.on_enter()
-          break
         pass
     except:
       curses.endwin()
@@ -157,6 +156,7 @@ class Prompt:
   # When an option gets selected
   def on_enter(self) -> None:
     update_paths(self.options[self.pos])
+    exit(0)
 
 # Settings
 max_paths: int = 250
@@ -285,6 +285,8 @@ def update_paths(path: str) -> None:
   if Path(path) != Path(pwd):
     filter_path(path)
     update_file()
+  else:
+    exit(1)
 
 # Show the first paths
 def show_top() -> None:
