@@ -102,7 +102,7 @@ class Prompt:
 
     for i, path in enumerate(self.options):
       if i == self.pos:
-        self.screen.addstr(i, 0, path, curses.A_UNDERLINE)
+        self.screen.addstr(i, 0, path, curses.A_REVERSE)
       else:
         self.screen.addstr(i, 0, path, curses.A_NORMAL)
 
