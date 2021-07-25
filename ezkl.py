@@ -84,6 +84,7 @@ class Prompt:
     self.options = options
     self.pos = 0
 
+  # Start the curses screen
   def start(self):
     self.screen = curses.initscr()
     self.screen.keypad(True)
@@ -93,6 +94,8 @@ class Prompt:
     self.key_listener()
     curses.endwin()
 
+  # Print the options again
+  # Underline the current one
   def refresh(self) -> None:
     self.screen.clear()
 
@@ -102,6 +105,8 @@ class Prompt:
       else:
         self.screen.addstr(i, 0, path, curses.A_NORMAL)
 
+  # Forget options from paths
+  # and from the current options
   def forget(self):
     if self.pos < 0 or self.pos > len(self.options) - 1:
       return
@@ -112,6 +117,7 @@ class Prompt:
     self.pos = min(self.pos, len(self.options) - 1)
     self.refresh()
 
+  # Key detection loop
   def key_listener(self):
     try:
       while True:
@@ -133,6 +139,7 @@ class Prompt:
     except:
       curses.endwin()
 
+  # When an option gets selected
   def on_enter(self):
     update_paths(self.options[self.pos])
 
