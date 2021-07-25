@@ -16,6 +16,8 @@ And use z to jump to locations
 
 `z something`
 
+![](https://i.imgur.com/V9Fu9Kj.gif)
+
 It forgets paths (from paths.txt) that don't seem to exist anymore.
 
 It's possible to use multiple keywords to specify path hierarchy:
