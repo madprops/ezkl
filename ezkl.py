@@ -207,17 +207,17 @@ def show_options(matches: MatchList) -> None:
 
   for i, m in enumerate(matches.items[0:max_options]):
     screen.addstr(i, 0, m.path)
-  
+
   screen.refresh()
   pos = 0
 
-  def highlight():
+  def highlight() -> None:
     for i, m in enumerate(matches.items[0:max_options]):
       if i == pos:
         screen.addstr(i, 0, m.path, curses.A_UNDERLINE)
       else:
         screen.addstr(i, 0, m.path, curses.A_NORMAL)
-  
+
   highlight()
   enter = False
 
@@ -225,8 +225,8 @@ def show_options(matches: MatchList) -> None:
     while True:
       char = screen.getch()
       if char == ord('q'):
-        break      
-      elif char == curses.KEY_UP: 
+        break
+      elif char == curses.KEY_UP:
         pos = (pos - 1) if pos > 0 else pos
         highlight()
       elif char == curses.KEY_DOWN:
@@ -239,7 +239,7 @@ def show_options(matches: MatchList) -> None:
     curses.nocbreak()
     curses.echo()
     curses.endwin()
-  
+
   curses.endwin()
   if not enter: exit(1)
 
