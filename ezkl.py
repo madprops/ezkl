@@ -133,10 +133,14 @@ class Prompt:
         elif char == ord('d'):
           self.forget()
         elif char == curses.KEY_UP:
-          self.pos = (self.pos - 1) if self.pos > 0 else self.pos
+          self.pos -= 1
+          if self.pos < 0:
+            self.pos = self.last()
           self.refresh()
         elif char == curses.KEY_DOWN:
-          self.pos = (self.pos + 1) if self.pos < len(self.options) - 1 else self.pos
+          self.pos += 1
+          if self.pos > self.last():
+            self.pos = 0
           self.refresh()
         elif char == 10:
           self.on_enter()
@@ -145,6 +149,10 @@ class Prompt:
     except:
       curses.endwin()
       exit(1)
+  
+  # Index of the last option
+  def last(self):
+    return len(self.options) - 1
 
   # When an option gets selected
   def on_enter(self):
