@@ -128,7 +128,7 @@ class Prompt:
     try:
       while True:
         char = self.screen.getch()
-        if char == ord('q'):
+        if char in [ord('q'), 27]:
           break
         elif char == ord('d'):
           self.forget()
