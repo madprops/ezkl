@@ -27,7 +27,8 @@ class MatchList:
   # Remove unecessary items
   def filter(self, filters: List[str], max: int) -> None:
     matches: List[Match] = []
-    rstr = ".*" + ".*/.*".join(filters) + ".*"
+    lowfilters = map(lambda x: x.lower(), filters)
+    rstr = ".*" + ".*/.*".join(lowfilters) + ".*"
 
     for m in self.items:
       add = True
