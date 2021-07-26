@@ -260,25 +260,28 @@ def get_matches(keywords: List[str]) -> MatchList:
     lowkeyword = keyword.lower()
     for path in paths:
       parts = get_parts(path)
+      partlist: List[str] = []
       for i, part in enumerate(parts):
+        partlist.append(part)
         lowpart = part.lower()
+        partjoin = "/" + "/".join(partlist)
         if lowkeyword == lowpart:
           if i == len(parts) - 1:
-            if not roots.has(path):
-              if is_valid_path(path, keywords, 1):
-                roots.add(path)
+            if not roots.has(partjoin):
+              if is_valid_path(partjoin, keywords, 1):
+                roots.add(partjoin)
           else:
-            if not exact.has(path):
-              if is_valid_path(path, keywords, 1):
-                exact.add(path)
+            if not exact.has(partjoin):
+              if is_valid_path(partjoin, keywords, 1):
+                exact.add(partjoin)
         elif lowpart.startswith(lowkeyword):
-          if not starts.has(path):
-            if is_valid_path(path, keywords, 1):
-              starts.add(path)
+          if not starts.has(partjoin):
+            if is_valid_path(partjoin, keywords, 1):
+              starts.add(partjoin)
         elif lowkeyword in lowpart:
-          if not includes.has(path):
-            if is_valid_path(path, keywords, 2):
-              includes.add(path)
+          if not includes.has(partjoin):
+            if is_valid_path(partjoin, keywords, 2):
+              includes.add(partjoin)
 
   if roots.len() > 0:
     if roots.len() == 1:
