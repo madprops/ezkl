@@ -16,30 +16,9 @@ class MatchList:
   def add(self, match: str) -> None:
     self.items.append(match)
 
-  # Remove unecessary items
-  def filter(self, filters: List[str], max: int) -> None:
-    matches: List[str] = []
-    lowfilters = map(lambda x: x.lower(), filters)
-    rstr = ".*/" + ".*/".join(lowfilters) + ".*"
-
-    for m in self.items:
-      add = True
-
-      for m2 in matches:
-        if m == m2:
-          add = False
-          break
-
-      if add:
-        if not re.search(rstr, m.lower()):
-          add = False
-
-      if add:
-        matches.append(m)
-        if len(matches) == max:
-          break
-
-    self.items = matches
+  # Append a list of items
+  def add_list(self, items: List[str]) -> None:
+    self.items += items
 
   # Get a slice of matches
   def slice(self, max: int) -> List[str]:
@@ -64,6 +43,10 @@ class MatchList:
       if m == match:
         return True
     return False
+
+  # Check if there are no items
+  def empty(self) -> bool:
+    return len(self.items) == 0
 
 # Show relevant paths to pick from
 # Up/Down arrows and Enter
@@ -170,7 +153,7 @@ class Prompt:
 
 # Settings
 max_paths: int = 250
-max_options: int = 10
+max_matches: int = 10
 
 # Globals
 mode: str
@@ -257,18 +240,37 @@ def forget_path(path: str, subpaths: bool) -> None:
 
   paths = pths
 
-# Try to find a matching path
-def get_matches(filter: str) -> MatchList:
-  matches = MatchList()
-  lowfilter = filter.lower()
+# Get the parts of a path
+def get_parts(path: str) -> List[str]:
+  return list(filter(lambda x: x != "", path.split("/")))
 
-  for path in paths:
-    split = path.split("/")
-    for part in split:
-      lowpart = part.lower()
-      if lowpart.startswith(lowfilter):
-        if not matches.has(path):
-          matches.add(path)
+# Find matching paths
+# It first tries with startswith
+# If 0 matches then it uses "in"
+def get_matches(keywords: List[str]) -> MatchList:
+  matches = MatchList()
+
+  for keyword in keywords:
+    for path in paths:
+      for part in get_parts(path):
+        if part.lower().startswith(keyword.lower()):
+          if not matches.has(path):
+            if is_valid_path(path, keywords, 1):
+              matches.add(path)
+              if matches.len() == max_matches:
+                break
+
+
+  if matches.len() < max_matches:
+    for keyword in keywords:
+      for path in paths:
+        for part in get_parts(path):
+          if keyword.lower() in part.lower():
+            if not matches.has(path):
+              if is_valid_path(path, keywords, 2):
+                matches.add(path)
+                if matches.len() == max_matches:
+                  break
 
   return matches
 
@@ -305,18 +307,12 @@ def jump() -> None:
     re.split("\\s|/", keyw)))
 
   if len(keywords) == 0:
-    Prompt(paths[0:max_options]).start()
+    Prompt(paths[0:max_matches]).start()
   else:
-    matches = MatchList()
-
-    for kw in keywords:
-      matches.items += get_matches(kw).items
-
-    matches.filter(keywords, max_options)
-
-    if matches.len() > 0:
+    matches = get_matches(keywords)
+    if not matches.empty():
       if matches.len() > 1:
-        Prompt(matches.slice(max_options)).start()
+        Prompt(matches.slice(max_matches)).start()
       else:
         path = matches.first()
         update_paths(path)
@@ -326,6 +322,21 @@ def jump() -> None:
 # Show a message
 def info(msg: str) -> None:
   print(f"\n{msg}\n")
+
+# Check if path is valid
+def is_valid_path(path: str, keywords: List[str], mode: int) -> bool:
+  lowkeywords = map(lambda x: x.lower(), keywords)
+
+  rstr = ""
+
+  if mode == 1:
+    # Mode for startswith
+    rstr = "/" + ".*/".join(lowkeywords) + ".*"
+  elif mode == 2:
+    # Mode for x in y
+    rstr = "/.*" + ".*/.*".join(lowkeywords) + ".*"
+
+  return bool(re.search(rstr, path.lower()))
 
 # Program starts here
 if __name__ == "__main__": main()
