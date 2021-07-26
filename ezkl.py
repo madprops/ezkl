@@ -4,13 +4,14 @@ import curses
 from sys import argv
 from os import getenv
 from typing import List
-from typing import Optional
 from pathlib import Path
 
 # List of matches
 class MatchList:
-  def __init__(self, items: Optional[List[str]] = None):
-    self.items = items if items is not None else []
+  items: List[str]
+
+  def __init__(self):
+    self.items = []
 
   # Add an item
   def add(self, match: str) -> None:
