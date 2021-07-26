@@ -361,13 +361,13 @@ def is_valid_path(path: str, keywords: List[str], mode: int) -> bool:
   lowkeywords = map(lambda x: x.lower(), keywords)
 
   if mode == 1:
-    # Mode for startswithz
+    # Mode for startswith
     rstr = "/" + ".*/".join(lowkeywords) + ".*"
 
   elif mode == 2:
     # Mode for x in y
     rstr = "/.*" + ".*/.*".join(lowkeywords) + ".*"
-    
+
   else:
     return False
 
