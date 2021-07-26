@@ -260,8 +260,7 @@ def get_matches(keywords: List[str]) -> MatchList:
               if matches.len() == max_matches:
                 break
 
-
-  if matches.len() < max_matches:
+  if matches.len() != 1:
     for keyword in keywords:
       for path in paths:
         for part in get_parts(path):
