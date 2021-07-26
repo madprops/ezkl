@@ -322,7 +322,7 @@ def is_pwd(path: str) -> bool:
 # Main jump function
 def jump() -> None:
   if len(paths) == 0:
-    print("No paths remembered yet")
+    info("No paths remembered yet")
     exit()
 
   keywords = list(filter(lambda x: x != "", \
