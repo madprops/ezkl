@@ -17,9 +17,9 @@ class MatchList:
   def add(self, match: str) -> None:
     self.items.append(match)
 
-  # Append a list of items
-  def add_list(self, items: List[str]) -> None:
-    self.items += items
+  # Append two lists
+  def join(self, matches: "MatchList") -> None:
+    self.items += matches.items
 
   # Get a slice of matches
   def slice(self, max: int) -> List[str]:
@@ -279,13 +279,31 @@ def get_matches(keywords: List[str]) -> MatchList:
               includes.add(path)
 
   if roots.len() > 0:
-    return roots
+    if roots.len() == 1:
+      return roots
+    else:
+      roots.join(exact)
+      roots.join(starts)
+      roots.join(includes)
+      return roots
+
   elif exact.len() > 0:
-    return exact
+    if exact.len() == 1:
+      return exact
+    else:
+      exact.join(starts)
+      exact.join(includes)
+      return exact
+
   elif starts.len() > 0:
-    return starts
+    if starts.len() == 1:
+      return starts
+    else:
+      starts.join(includes)
+      return starts
+
   elif includes.len() > 0:
-    return includes
+    return includes    
 
   return MatchList()
 
