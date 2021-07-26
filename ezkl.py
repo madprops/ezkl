@@ -10,7 +10,7 @@ from pathlib import Path
 class MatchList:
   items: List[str]
 
-  def __init__(self):
+  def __init__(self) -> None:
     self.items = []
 
   # Add an item
@@ -303,7 +303,7 @@ def get_matches(keywords: List[str]) -> MatchList:
       return starts
 
   elif includes.len() > 0:
-    return includes    
+    return includes
 
   return MatchList()
 
