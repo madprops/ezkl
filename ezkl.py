@@ -245,33 +245,48 @@ def get_parts(path: str) -> List[str]:
   return list(filter(lambda x: x != "", path.split("/")))
 
 # Find matching paths
-# It first tries with startswith
-# If 0 matches then it uses "in"
+# There are 3 lists
+# Exact parts, startswith, and includes
 def get_matches(keywords: List[str]) -> MatchList:
-  matches = MatchList()
+  roots = MatchList()
+  exact = MatchList()
+  starts = MatchList()
+  includes = MatchList()
 
   for keyword in keywords:
+    lowkeyword = keyword.lower()
     for path in paths:
-      for part in get_parts(path):
-        if part.lower().startswith(keyword.lower()):
-          if not matches.has(path):
+      parts = get_parts(path)
+      for i, part in enumerate(parts):
+        lowpart = part.lower()
+        if lowkeyword == lowpart:
+          if i == len(parts) - 1:
+            if not roots.has(path):
+              if is_valid_path(path, keywords, 1):
+                roots.add(path)
+          else:
+            if not exact.has(path):
+              if is_valid_path(path, keywords, 1):
+                exact.add(path)          
+        elif lowpart.startswith(lowkeyword):
+          if not starts.has(path):
             if is_valid_path(path, keywords, 1):
-              matches.add(path)
-              if matches.len() == max_matches:
-                break
-
-  if matches.len() != 1:
-    for keyword in keywords:
-      for path in paths:
-        for part in get_parts(path):
-          if keyword.lower() in part.lower():
-            if not matches.has(path):
-              if is_valid_path(path, keywords, 2):
-                matches.add(path)
-                if matches.len() == max_matches:
-                  break
-
-  return matches
+              starts.add(path)
+        elif lowkeyword in lowpart:
+          if not includes.has(path):
+            if is_valid_path(path, keywords, 2):
+              includes.add(path)
+    
+  if roots.len() > 0:
+    return roots
+  elif exact.len() > 0:
+    return exact
+  elif starts.len() > 0:
+    return starts
+  elif includes.len() > 0:
+    return includes
+  
+  return MatchList()
 
 # Write paths to file
 def update_file() -> None:
