@@ -248,10 +248,8 @@ def get_parts(path: str) -> List[str]:
   return list(filter(lambda x: x != "", path.split("/")))
 
 # Find matching paths
-# There are 4 lists
-# Roots, exact parts, startswith, and includes
+# Exact parts, startswith, and includes
 def get_matches(keywords: List[str]) -> MatchList:
-  roots = MatchList()
   exact = MatchList()
   starts = MatchList()
   includes = MatchList()
@@ -261,19 +259,14 @@ def get_matches(keywords: List[str]) -> MatchList:
     for path in paths:
       parts = get_parts(path)
       partlist: List[str] = []
-      for i, part in enumerate(parts):
+      for part in parts:
         partlist.append(part)
         lowpart = part.lower()
         partjoin = "/" + "/".join(partlist)
         if lowkeyword == lowpart:
-          if i == len(parts) - 1:
-            if not roots.has(partjoin):
-              if is_valid_path(partjoin, keywords, 1):
-                roots.add(partjoin)
-          else:
-            if not exact.has(partjoin):
-              if is_valid_path(partjoin, keywords, 1):
-                exact.add(partjoin)
+          if not exact.has(partjoin):
+            if is_valid_path(partjoin, keywords, 1):
+              exact.add(partjoin)
         elif lowpart.startswith(lowkeyword):
           if not starts.has(partjoin):
             if is_valid_path(partjoin, keywords, 1):
@@ -283,16 +276,7 @@ def get_matches(keywords: List[str]) -> MatchList:
             if is_valid_path(partjoin, keywords, 2):
               includes.add(partjoin)
 
-  if roots.len() > 0:
-    if roots.len() == 1:
-      return roots
-    else:
-      roots.join(exact)
-      roots.join(starts)
-      roots.join(includes)
-      return roots
-
-  elif exact.len() > 0:
+  if exact.len() > 0:
     if exact.len() == 1:
       return exact
     else:
