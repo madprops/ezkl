@@ -93,6 +93,9 @@ class Prompt:
     curses.curs_set(0)
     self.refresh()
     self.key_listener()
+  
+  # Stop the curses screen
+  def stop(self) -> None:
     curses.endwin()
 
   # Print a higlighted option
@@ -129,8 +132,8 @@ class Prompt:
     del self.options[self.pos]
 
     if len(self.options) == 0:
-      curses.endwin()
-      exit(1)
+      self.stop()
+      exit()
 
     self.pos = min(self.pos, len(self.options) - 1)
     self.refresh()
@@ -141,6 +144,7 @@ class Prompt:
       while True:
         char = self.screen.getch()
         if char in [ord('q'), 27]:
+          self.stop()
           break
         elif char == ord('d'):
           self.forget()
@@ -149,10 +153,11 @@ class Prompt:
         elif char in [curses.KEY_DOWN, ord(' '), ord('j')]:
           self.on_down()
         elif char == 10:
+          self.stop()
           self.on_enter()
           break
     except:
-      curses.endwin()
+      self.stop()
 
   # Index of the last option
   def last(self) -> int:
@@ -215,10 +220,10 @@ def get_args() -> None:
   keyw = " ".join(args[1:]) if len(args) > 1 else ""
 
   if mode not in ["remember", "forget", "jump"]:
-    exit(1)
+    exit()
 
   if mode in ["forget"] and keyw == "":
-    exit(1)
+    exit()
 
 # Read the paths file plus other paths
 def get_paths() -> None:
@@ -304,15 +309,14 @@ def update_paths(path: str) -> None:
   if Path(path) != Path(pwd):
     filter_path(path)
     update_file()
-    exit(0)
   else:
-    exit(1)
+    info("Already at path")
 
 # Main jump function
 def jump() -> None:
   if len(paths) == 0:
     print("No paths remembered yet")
-    exit(1)
+    exit()
 
   keywords = list(filter(lambda x: x != "", \
     re.split("\\s|/", keyw)))
@@ -334,7 +338,11 @@ def jump() -> None:
         path = matches.first().path
         update_paths(path)
     else:
-      exit(1)
+      info("No paths found")
+
+# Show a message
+def info(msg: str) -> None:
+  print(f"\n{msg}\n")
 
 # Program starts here
 if __name__ == "__main__": main()

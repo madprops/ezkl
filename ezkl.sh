@@ -5,8 +5,7 @@ CCDIR="$( builtin cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 function cd () {
   # Use the actual cd
-  builtin cd "$@"
-  if [ $? == 0 ]; then
+  if builtin cd "$@"; then
     # If cd was ok then save the path
     python3 "${CCDIR}"/ezkl.py remember
   fi
@@ -15,15 +14,13 @@ function cd () {
 complete -A directory cd
 
 function z () {
-  path=""
   # Find a path to cd to
-  python3 "${CCDIR}"/ezkl.py jump "$@" &&
+  python3 "${CCDIR}"/ezkl.py jump "$@"
   path=$(head -n 1 "${CCDIR}/paths.txt")
   # Check if path is empty
   if [ -n "${path}" ]; then
     # If path is not empty then cd to it
-    builtin cd "$path"
-    if [ $? != 0 ]; then
+    if ! builtin cd "$path"; then
       # If cd was not ok then forget the path
       python3 "${CCDIR}"/ezkl.py forget "$path"
     fi
