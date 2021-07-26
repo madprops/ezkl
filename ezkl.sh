@@ -17,12 +17,9 @@ function z () {
   # Find a path to cd to
   python3 "${CCDIR}"/ezkl.py jump "$@"
   path=$(head -n 1 "${CCDIR}/paths.txt")
-  # Check if path is empty
-  if [ -n "${path}" ]; then
-    # If path is not empty then cd to it
-    if ! builtin cd "$path"; then
-      # If cd was not ok then forget the path
-      python3 "${CCDIR}"/ezkl.py forget "$path"
-    fi
+  # Try to cd to path
+  if ! builtin cd "$path"; then
+    # If cd was not ok then forget the path
+    python3 "${CCDIR}"/ezkl.py forget "$path"
   fi
 }
