@@ -14,7 +14,7 @@ And use z to jump to locations
 
 `z something`
 
-![](https://i.imgur.com/sdJcsV3.gif)
+![](https://i.imgur.com/TTkWt1V.gif)
 
 It forgets paths (from paths.txt) that don't seem to exist anymore.
 
