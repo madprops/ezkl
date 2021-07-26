@@ -1,8 +1,13 @@
 Git clone this somewhere then add this to .bashrc:
 
 ```
-source /path/to/ezkl/ezkl.sh
+source /path/to/ezkl/ezkl.bash.sh
 ```
+
+Shells supported:
+
+- Bash
+- Fish
 
 Then `source ~/.bashrc`
 
