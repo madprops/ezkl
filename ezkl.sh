@@ -1,4 +1,4 @@
-#!/bin/bash
+# Bash version
 
 # Directory where the ezkl files are
 CCDIR="$( builtin cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
