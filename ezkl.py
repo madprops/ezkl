@@ -95,6 +95,14 @@ class Prompt:
     self.key_listener()
     curses.endwin()
 
+  # Print a higlighted option
+  def print_reverse(self, y: int, path: str) -> None:
+    self.screen.addstr(y, 2, path, curses.A_REVERSE)
+
+  # Print a normal option
+  def print_normal(self, y: int, path: str) -> None:
+    self.screen.addstr(y, 2, path, curses.A_NORMAL)
+
   # Print the options again
   # Underline the current one
   def refresh(self) -> None:
@@ -103,11 +111,12 @@ class Prompt:
     for i, path in enumerate(self.options):
       try:
         if i == self.pos:
-          self.screen.addstr(i + 1, 2, path, curses.A_REVERSE)
+          self.print_reverse(i + 1, path)
         else:
-          self.screen.addstr(i + 1, 2, path, curses.A_NORMAL)
+          self.print_normal(i + 1, path)
       except:
-        pass
+        self.options = self.options[0:i]
+        return
 
   # Forget options from paths
   # and from the current options
