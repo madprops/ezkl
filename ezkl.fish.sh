@@ -18,7 +18,7 @@ function z
   python3 "$CCDIR"/ezkl.py jump "$argv"
   set path (head -n 1 "$CCDIR/paths.txt")
   # Try to cd to path
-  if ! builtin cd "$path"; then
+  if ! builtin cd "$path";
     # If cd was not ok then forget the path
     python3 "$CCDIR"/ezkl.py forget "$path"
   end
