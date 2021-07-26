@@ -19,7 +19,9 @@ class MatchList:
 
   # Append two lists
   def join(self, matches: "MatchList") -> None:
-    self.items += matches.items
+    for item in matches.items:
+      if item not in self.items:
+        self.items.append(item)
 
   # Get a slice of matches
   def slice(self, max: int) -> List[str]:
