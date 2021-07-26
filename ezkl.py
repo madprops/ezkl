@@ -7,26 +7,18 @@ from typing import List
 from typing import Optional
 from pathlib import Path
 
-# Matched paths
-class Match:
-  def __init__(self, path: str):
-    self.path = path
-
-  def level(self) -> int:
-    return len(self.path.split("/"))
-
 # List of matches
 class MatchList:
-  def __init__(self, items: Optional[List[Match]] = None):
+  def __init__(self, items: Optional[List[str]] = None):
     self.items = items if items is not None else []
 
   # Add an item
-  def add(self, match: Match) -> None:
+  def add(self, match: str) -> None:
     self.items.append(match)
 
   # Remove unecessary items
   def filter(self, filters: List[str], max: int) -> None:
-    matches: List[Match] = []
+    matches: List[str] = []
     lowfilters = map(lambda x: x.lower(), filters)
     rstr = ".*/" + ".*/".join(lowfilters) + ".*"
 
@@ -34,12 +26,12 @@ class MatchList:
       add = True
 
       for m2 in matches:
-        if m.path == m2.path:
+        if m == m2:
           add = False
           break
 
       if add:
-        if not re.search(rstr, m.path.lower()):
+        if not re.search(rstr, m.lower()):
           add = False
 
       if add:
@@ -49,22 +41,17 @@ class MatchList:
 
     self.items = matches
 
-  # Get a slice of raw paths
+  # Get a slice of matches
   def slice(self, max: int) -> List[str]:
     paths: List[str] = []
 
     for m in self.items[0:max]:
-      paths.append(m.path)
+      paths.append(m)
 
     return paths
 
-  # Used for debuggin purposes
-  def to_string(self) -> None:
-    for m in self.items:
-      print(f"Path: {m.path}")
-
   # Get first item
-  def first(self) -> Match:
+  def first(self) -> str:
     return self.items[0]
 
   # Get number of matches
@@ -72,9 +59,9 @@ class MatchList:
     return len(self.items)
 
   # Check if list has item
-  def has(self, match: Match) -> bool:
+  def has(self, match: str) -> bool:
     for m in self.items:
-      if m.path == match.path:
+      if m == match:
         return True
     return False
 
@@ -93,7 +80,7 @@ class Prompt:
     curses.curs_set(0)
     self.refresh()
     self.key_listener()
-  
+
   # Stop the curses screen
   def stop(self) -> None:
     curses.endwin()
@@ -107,7 +94,7 @@ class Prompt:
     self.screen.addstr(y, 2, path, curses.A_NORMAL)
 
   # Print the options again
-  # Underline the current one
+  # Highlight the current one
   def refresh(self) -> None:
     self.screen.clear()
 
@@ -280,9 +267,8 @@ def get_matches(filter: str) -> MatchList:
     for part in split:
       lowpart = part.lower()
       if lowpart.startswith(lowfilter):
-        match = Match(path)
-        if not matches.has(match):
-          matches.add(match)
+        if not matches.has(path):
+          matches.add(path)
 
   return matches
 
@@ -297,20 +283,17 @@ def update_file() -> None:
 def clean_path(path: str) -> str:
   return path.rstrip("/")
 
-# Parse string to number
-def to_number(s: str) -> int:
-  num = re.sub("[^0-9]", "", s)
-  if len(num) > 0:
-    return int(num)
-  return 0
-
 # Save the paths file
 def update_paths(path: str) -> None:
   if paths[0] != path:
     filter_path(path)
     update_file()
-  if Path(path) == Path(pwd):
+  if is_pwd(path):
     info("Already at path")
+
+# Check if path is the current directory
+def is_pwd(path: str) -> bool:
+  return Path(path) == Path(pwd)
 
 # Main jump function
 def jump() -> None:
@@ -335,7 +318,7 @@ def jump() -> None:
       if matches.len() > 1:
         Prompt(matches.slice(max_options)).start()
       else:
-        path = matches.first().path
+        path = matches.first()
         update_paths(path)
     else:
       info("No paths found")
