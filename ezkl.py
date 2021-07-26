@@ -306,8 +306,9 @@ def to_number(s: str) -> int:
 
 # Save the paths file
 def update_paths(path: str) -> None:
-  filter_path(path)
-  update_file()
+  if paths[0] != path:
+    filter_path(path)
+    update_file()
   if Path(path) == Path(pwd):
     info("Already at path")
 
