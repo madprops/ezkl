@@ -245,8 +245,8 @@ def get_parts(path: str) -> List[str]:
   return list(filter(lambda x: x != "", path.split("/")))
 
 # Find matching paths
-# There are 3 lists
-# Exact parts, startswith, and includes
+# There are 4 lists
+# Roots, exact parts, startswith, and includes
 def get_matches(keywords: List[str]) -> MatchList:
   roots = MatchList()
   exact = MatchList()
@@ -267,7 +267,7 @@ def get_matches(keywords: List[str]) -> MatchList:
           else:
             if not exact.has(path):
               if is_valid_path(path, keywords, 1):
-                exact.add(path)          
+                exact.add(path)
         elif lowpart.startswith(lowkeyword):
           if not starts.has(path):
             if is_valid_path(path, keywords, 1):
@@ -276,7 +276,7 @@ def get_matches(keywords: List[str]) -> MatchList:
           if not includes.has(path):
             if is_valid_path(path, keywords, 2):
               includes.add(path)
-    
+
   if roots.len() > 0:
     return roots
   elif exact.len() > 0:
@@ -285,7 +285,7 @@ def get_matches(keywords: List[str]) -> MatchList:
     return starts
   elif includes.len() > 0:
     return includes
-  
+
   return MatchList()
 
 # Write paths to file
