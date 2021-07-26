@@ -101,10 +101,13 @@ class Prompt:
     self.screen.clear()
 
     for i, path in enumerate(self.options):
-      if i == self.pos:
-        self.screen.addstr(i + 1, 2, path, curses.A_REVERSE)
-      else:
-        self.screen.addstr(i + 1, 2, path, curses.A_NORMAL)
+      try:
+        if i == self.pos:
+          self.screen.addstr(i + 1, 2, path, curses.A_REVERSE)
+        else:
+          self.screen.addstr(i + 1, 2, path, curses.A_NORMAL)
+      except:
+        pass
 
   # Forget options from paths
   # and from the current options
