@@ -1,13 +1,16 @@
 Git clone this somewhere then add this to .bashrc:
 
 ```
-source /path/to/ezkl/ezkl.bash.sh
+source /path/to/ezkl/ezkl.x.sh
 ```
+
+Replace x with the appropriate shell.
 
 Shells supported:
 
-- Bash
-- Fish
+- bash
+- fish
+- zsh
 
 Then `source ~/.bashrc`
 
