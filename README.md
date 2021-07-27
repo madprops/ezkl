@@ -12,7 +12,7 @@ Shells supported:
 - fish
 - zsh
 
-Then `source ~/.bashrc`
+Then source the shells' config file or restart the shell.
 
 Now use cd normally to remember paths
 
