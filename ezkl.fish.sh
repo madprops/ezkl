@@ -11,8 +11,6 @@ function cd
   end
 end
 
-complete --command cd --arguments '(__fish_complete_directories)'
-
 function z
   # Find a path to cd to
   python3 "$zdir"/ezkl.py jump "$argv"

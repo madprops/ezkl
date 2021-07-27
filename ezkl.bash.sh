@@ -11,8 +11,6 @@ function cd () {
   fi
 }
 
-complete -A directory cd
-
 function z () {
   # Find a path to cd to
   python3 "${zdir}"/ezkl.py jump "$@"
