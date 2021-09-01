@@ -94,23 +94,6 @@ class Prompt:
         self.options = self.options[0:i]
         return
 
-  # Forget options from paths
-  # and from the current options
-  def forget(self) -> None:
-    if self.pos < 0 or self.pos > len(self.options) - 1:
-      return
-
-    forget_path(self.options[self.pos], False)
-    update_file()
-    del self.options[self.pos]
-
-    if len(self.options) == 0:
-      self.stop()
-      exit()
-
-    self.pos = min(self.pos, len(self.options) - 1)
-    self.refresh()
-
   # Key detection loop
   def key_listener(self) -> None:
     try:
@@ -119,8 +102,6 @@ class Prompt:
         if char in [ord('q'), 27]:
           self.stop()
           break
-        elif char == ord('d'):
-          self.forget()
         elif char in [curses.KEY_UP, curses.KEY_BACKSPACE, ord('k')]:
           self.on_up()
         elif char in [curses.KEY_DOWN, ord(' '), ord('j')]:
