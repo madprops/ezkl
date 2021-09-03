@@ -3,7 +3,7 @@ import re
 import curses
 from sys import argv
 from os import getenv
-from typing import List
+from typing import List, Match
 from pathlib import Path
 
 # List of matches
@@ -231,9 +231,9 @@ def get_parts(path: str) -> List[str]:
 # Find matching paths
 # Exact parts, startswith, and includes
 def get_matches(keywords: List[str]) -> MatchList:
-  exact = MatchList()
-  starts = MatchList()
-  includes = MatchList()
+  p_exact = MatchList()
+  p_starts = MatchList()
+  p_includes = MatchList()
 
   for keyword in keywords:
     lowkeyword = keyword.lower()
@@ -245,18 +245,41 @@ def get_matches(keywords: List[str]) -> MatchList:
         lowpart = part.lower()
         partjoin = "/" + "/".join(partlist)
         if lowkeyword == lowpart:
-          if not exact.has(partjoin):
+          if not p_exact.has(partjoin):
             if is_valid_path(partjoin, keywords, 1):
-              exact.add(partjoin)
+              p_exact.add(partjoin)
         elif lowpart.startswith(lowkeyword):
-          if not starts.has(partjoin):
+          if not p_starts.has(partjoin):
             if is_valid_path(partjoin, keywords, 1):
-              starts.add(partjoin)
+              p_starts.add(partjoin)
         elif lowkeyword in lowpart:
-          if not includes.has(partjoin):
+          if not p_includes.has(partjoin):
             if is_valid_path(partjoin, keywords, 2):
-              includes.add(partjoin)
+              p_includes.add(partjoin)
+  
+  exact = MatchList()
+  starts = MatchList()
+  includes = MatchList()
 
+  exact.items = p_exact.items[:]
+  starts.items = p_starts.items[:]
+  includes.items = p_includes.items[:]
+
+  def check_syms(list_1: MatchList, list_2: MatchList) -> None:
+    for p in list_1.items:
+      if p not in list_2.items:
+        continue
+      res = str(Path(p).resolve())
+      for pp in list_2.items:
+        if p == pp:
+          continue
+        if pp == res:
+          list_2.items.remove(res)
+  
+  check_syms(p_exact, exact)
+  check_syms(p_starts, starts)
+  check_syms(p_includes, includes)
+  
   if exact.len() > 0:
     if exact.len() == 1:
       return exact
