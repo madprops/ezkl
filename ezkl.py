@@ -269,12 +269,15 @@ def get_matches(keywords: List[str]) -> MatchList:
     for p in list_1.items:
       if p not in list_2.items:
         continue
-      res = str(Path(p).resolve())
+      px = Path(p)
+      res = px.resolve()
       for pp in list_2.items:
-        if p == pp:
+        ppx = Path(pp)
+        if px == ppx:
           continue
-        if pp == res:
-          list_2.items.remove(res)
+        if ppx == res:
+          list_2.items.remove(pp)
+          break
   
   check_syms(p_exact, exact)
   check_syms(p_starts, starts)
