@@ -136,7 +136,7 @@ class Prompt:
     update_paths(self.options[self.pos])
 
 # Settings
-max_paths: int = 250
+max_paths: int = 500
 max_matches: int = 10
 
 # Globals
