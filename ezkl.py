@@ -228,6 +228,20 @@ def forget_path(path: str, subpaths: bool) -> None:
 def get_parts(path: str) -> List[str]:
   return list(filter(lambda x: x != "", path.split("/")))
 
+def check_syms(list_1: MatchList, list_2: MatchList) -> None:
+  for p in list_1.items:
+    if p not in list_2.items:
+      continue
+    px = Path(p)
+    res = px.resolve()
+    for pp in list_2.items:
+      ppx = Path(pp)
+      if px == ppx:
+        continue
+      if ppx == res:
+        list_2.items.remove(pp)
+        break  
+
 # Find matching paths
 # Exact parts, startswith, and includes
 def get_matches(keywords: List[str]) -> MatchList:
@@ -264,20 +278,6 @@ def get_matches(keywords: List[str]) -> MatchList:
   exact.items = p_exact.items[:]
   starts.items = p_starts.items[:]
   includes.items = p_includes.items[:]
-
-  def check_syms(list_1: MatchList, list_2: MatchList) -> None:
-    for p in list_1.items:
-      if p not in list_2.items:
-        continue
-      px = Path(p)
-      res = px.resolve()
-      for pp in list_2.items:
-        ppx = Path(pp)
-        if px == ppx:
-          continue
-        if ppx == res:
-          list_2.items.remove(pp)
-          break
   
   check_syms(p_exact, exact)
   check_syms(p_starts, starts)
