@@ -29,5 +29,3 @@ It forgets paths (from paths.txt) that don't seem to exist anymore.
 It's possible to use multiple keywords to specify path hierarchy:
 
 "z code tetris" matches paths like `/code/something/tetris`. 
-
-Using 'd' at a prompt removes that path from the paths file.
