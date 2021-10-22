@@ -102,6 +102,10 @@ class Prompt:
         if char in [ord('q'), 27]:
           self.stop()
           break
+        elif char == ord('D'):
+          forget_path(self.options[self.pos], True)
+          update_file()
+          self.remove_option()
         elif char in [curses.KEY_UP, curses.KEY_BACKSPACE, ord('k')]:
           self.on_up()
         elif char in [curses.KEY_DOWN, ord(' '), ord('j')]:
@@ -134,6 +138,15 @@ class Prompt:
   # When an option gets selected
   def on_enter(self) -> None:
     update_paths(self.options[self.pos])
+  
+  # When an option is set to be removed
+  def remove_option(self) -> None:
+    new_options = []
+    for option in self.options:
+      if option != self.options[self.pos]:
+        new_options.append(option)
+    self.options = new_options
+    self.refresh()
 
 # Settings
 max_paths: int = 500
