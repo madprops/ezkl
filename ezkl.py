@@ -99,13 +99,19 @@ class Prompt:
     try:
       while True:
         char = self.screen.getch()
-        if char in [ord('q'), 27]:
+        if char in [ord('q'), ord('Q'), 27]:
           self.stop()
           break
         elif char == ord('D'):
           forget_path(self.options[self.pos], True)
           update_file()
           self.remove_option()
+          if len(self.options) == 0:
+            self.stop()
+            break
+          if self.pos >= len(self.options):
+            self.on_up()
+
         elif char in [curses.KEY_UP, curses.KEY_BACKSPACE, ord('k')]:
           self.on_up()
         elif char in [curses.KEY_DOWN, ord(' '), ord('j')]:
