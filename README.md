@@ -1,3 +1,5 @@
+News: It now uses ~/.config/ezkl/paths.txt
+
 Git clone this somewhere then add this to .bashrc:
 
 ```
