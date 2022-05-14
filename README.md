@@ -1,6 +1,8 @@
 News: It now uses ~/.config/ezkl/paths.txt
 
-Git clone this somewhere then add this to .bashrc:
+---
+
+Git clone this somewhere, then add this to your shell's config file:
 
 ```
 source /path/to/ezkl/ezkl.x.sh
@@ -8,13 +10,17 @@ source /path/to/ezkl/ezkl.x.sh
 
 Replace x with the appropriate shell.
 
+---
+
 Shells supported:
 
 - bash
 - fish
 - zsh
 
-Then source the shells' config file or restart the shell.
+---
+
+Then source the file or restart the shell.
 
 Now use cd normally to remember paths
 
@@ -24,7 +30,11 @@ And use z to jump to locations
 
 `z something`
 
+---
+
 ![](https://i.imgur.com/TTkWt1V.gif)
+
+---
 
 It forgets paths (from paths.txt) that don't seem to exist anymore.
 
