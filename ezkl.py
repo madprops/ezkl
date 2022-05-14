@@ -162,7 +162,6 @@ max_matches: int = 10
 mode: str
 keyw: str
 paths: List[str]
-thispath: Path
 filepath: Path
 pwd: str
 
@@ -201,12 +200,17 @@ def get_args() -> None:
 # Read the paths file plus other paths
 def get_paths() -> None:
   global paths
-  global thispath
   global filepath
   global pwd
-  thispath = Path(__file__).parent.resolve()
-  filepath = Path(thispath) / Path("paths.txt")
+
+  configdir = Path("~/.config/ezkl").expanduser()
+  
+  if not configdir.exists():
+    configdir.mkdir(parents=True)
+
+  filepath = configdir / Path("paths.txt")
   filepath.touch(exist_ok=True)
+
   file = open(filepath, "r")
   paths = file.read().split("\n")
   paths = list(map(str.strip, paths))

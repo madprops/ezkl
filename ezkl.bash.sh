@@ -14,7 +14,7 @@ function cd () {
 function z () {
   # Find a path to cd to
   python3 "${zdir}"/ezkl.py jump "$@"
-  zpath=$(head -n 1 "${zdir}/paths.txt")
+  zpath=$(head -n 1 "$HOME/.config/ezkl/paths.txt")
   # Try to cd to path
   if ! builtin cd "$zpath"; then
     # If cd was not ok then forget the path

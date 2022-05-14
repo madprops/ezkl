@@ -14,7 +14,7 @@ end
 function z
   # Find a path to cd to
   python3 "$zdir"/ezkl.py jump "$argv"
-  set zpath (head -n 1 "$zdir/paths.txt")
+  set zpath (head -n 1 "$HOME/.config/ezkl/paths.txt")
 
   # Try to cd to path
   builtin cd "$zpath"
