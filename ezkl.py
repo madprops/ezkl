@@ -6,10 +6,6 @@ from os import getenv
 from typing import List, Match
 from pathlib import Path
 
-# Settings
-max_paths: int = 500
-max_matches: int = 10
-
 # Globals
 mode: str
 keyw: str
@@ -219,9 +215,8 @@ def get_matches(keywords: List[str]) -> MatchList:
 
 # Write paths to file
 def update_file() -> None:
-  lines: List[str] = paths[0:max_paths]
   file = open(filepath, "w")
-  file.write("\n".join(lines).strip())
+  file.write("\n".join(paths).strip())
   file.close()
 
 # Remove unecessary characters
