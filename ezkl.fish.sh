@@ -11,12 +11,12 @@ function zforget
   python "$zdir"/ezkl.py forget
 end
 
-function zlistpaths
-  python "$zdir"/ezkl.py listpaths
+function zlist
+  python "$zdir"/ezkl.py list
 end
 
-function zclearpaths
-  python "$zdir"/ezkl.py clearpaths
+function zclear
+  python "$zdir"/ezkl.py clear
 end
 
 function z

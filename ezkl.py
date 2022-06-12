@@ -70,7 +70,7 @@ def get_args() -> None:
   args = argv[1:]
   mode = args[0] if len(args) > 0 else ""
 
-  if mode not in ["remember", "forget", "jump", "listpaths", "clearpaths"]:
+  if mode not in ["remember", "forget", "jump", "list", "clear"]:
     exit(1)
 
   keyw = " ".join(args[1:]) if len(args) > 1 else ""
@@ -298,11 +298,11 @@ def main() -> None:
     update_file()
     info("Path forgotten")
 
-  elif mode == "listpaths":
+  elif mode == "list":
     list_paths()    
   
-  elif mode == "clearpaths":
-    ans = input("Are you sure? (y/n): ")
+  elif mode == "clear":
+    ans = input("Forget all paths? (y/n): ")
     if ans == "y":
       clear_paths()
 
