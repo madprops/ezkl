@@ -187,6 +187,9 @@ def main() -> None:
       forget_path(pwd, True)
     update_file()
     info("Path forgotten")
+
+  elif mode == "listpaths":
+    list_paths()    
   
   elif mode == "clearpaths":
     ans = input("Are you sure? (y/n): ")
@@ -206,7 +209,7 @@ def get_args() -> None:
   args = argv[1:]
   mode = args[0] if len(args) > 0 else ""
 
-  if mode not in ["remember", "forget", "jump", "clearpaths"]:
+  if mode not in ["remember", "forget", "jump", "listpaths", "clearpaths"]:
     exit(1)
 
   keyw = " ".join(args[1:]) if len(args) > 1 else ""
@@ -359,6 +362,12 @@ def update_paths(path: str) -> None:
   if is_pwd(path):
     info("Already at path")
 
+# List the paths file
+def list_paths() -> None:
+  for path in paths:
+    print(path)
+
+# Clear the paths file
 def clear_paths() -> None:
   global paths
   paths = []

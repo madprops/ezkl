@@ -46,4 +46,6 @@ It's possible to use multiple keywords to specify path hierarchy:
 
 'D' (shift + d) removes an entry from the file while on the prompt.
 
+"zlistpaths" can be used to list all the remembered paths.
+
 "zclearpaths" can be used to empty the path file (forget all the paths).
