@@ -200,7 +200,7 @@ def get_args() -> None:
   mode = args[0] if len(args) > 0 else ""
 
   if mode not in ["remember", "forget", "jump", "clearpaths"]:
-    exit()
+    exit(1)
 
   keyw = " ".join(args[1:]) if len(args) > 1 else ""
 
@@ -366,7 +366,7 @@ def is_pwd(path: str) -> bool:
 def jump() -> None:
   if len(paths) == 0:
     info("No paths remembered yet")
-    exit()
+    exit(1)
 
   keywords = list(filter(lambda x: x != "", \
     re.split("\\s|/", keyw)))
@@ -383,10 +383,11 @@ def jump() -> None:
         update_paths(path)
     else:
       info("No paths found")
+      exit(1)
 
 # Show a message
 def info(msg: str) -> None:
-  print(f"\n{msg}\n")
+  print(f"ezkl: {msg}")
 
 # Check if path is valid
 def is_valid_path(path: str, keywords: List[str], mode: int) -> bool:
