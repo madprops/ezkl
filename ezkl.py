@@ -171,13 +171,22 @@ def main() -> None:
   get_paths()
 
   if mode == "remember":
-    if pwd != "":
-      filter_path(pwd)
-      update_file()
+    filter_path(pwd)
+    update_file()
+    info("Path remembered")
 
   elif mode == "forget":
-    forget_path(keyw, True)
+    if keyw != "":
+      forget_path(keyw, True)
+    else:
+      forget_path(pwd, True)
     update_file()
+    info("Path forgotten")
+  
+  elif mode == "clearpaths":
+    ans = input("Are you sure? (y/n): ")
+    if ans == "y":
+      clear_paths()
 
   elif mode == "jump":
     jump()
@@ -189,13 +198,11 @@ def get_args() -> None:
 
   args = argv[1:]
   mode = args[0] if len(args) > 0 else ""
+
+  if mode not in ["remember", "forget", "jump", "clearpaths"]:
+    exit()
+
   keyw = " ".join(args[1:]) if len(args) > 1 else ""
-
-  if mode not in ["remember", "forget", "jump"]:
-    exit()
-
-  if mode in ["forget"] and keyw == "":
-    exit()
 
 # Read the paths file plus other paths
 def get_paths() -> None:
@@ -344,6 +351,12 @@ def update_paths(path: str) -> None:
     update_file()
   if is_pwd(path):
     info("Already at path")
+
+def clear_paths() -> None:
+  global paths
+  paths = []
+  update_file()
+  info("Paths cleared")
 
 # Check if path is the current directory
 def is_pwd(path: str) -> bool:

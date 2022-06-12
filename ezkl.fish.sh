@@ -3,24 +3,30 @@
 # Directory where the ezkl files are
 set zdir (dirname (readlink -m (status --current-filename)))
 
-function cd
-  # Use the actual cd
-  if builtin cd $argv;
-    # If cd was ok then save the path
-    python3 "$zdir"/ezkl.py remember
-  end
+function zremember
+  python "$zdir"/ezkl.py remember
+end
+
+function zforget
+  python "$zdir"/ezkl.py forget
+end
+
+function zclearpaths
+  python "$zdir"/ezkl.py clearpaths
 end
 
 function z
   # Find a path to cd to
-  python3 "$zdir"/ezkl.py jump "$argv"
+  python "$zdir"/ezkl.py jump "$argv"
   set zpath (head -n 1 "$HOME/.config/ezkl/paths.txt")
 
-  # Try to cd to path
-  builtin cd "$zpath"
+  if test -n "$zpath"
+    # Try to cd to path
+    cd "$zpath"
 
-  # If cd was not ok then forget the path
-  if [ $status != "0" ] 
-    python3 "$zdir"/ezkl.py forget "$zpath"
+    # If cd was not ok then forget the path
+    if [ $status != "0" ]
+      python "$zdir"/ezkl.py forget "$zpath"
+    end
   end
 end

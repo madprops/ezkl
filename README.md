@@ -1,3 +1,7 @@
+News: Big rewrite. Not it doesn't remember automatically.
+
+Now it uses zremember and zforget
+
 News: It now uses ~/.config/ezkl/paths.txt
 
 ---
@@ -14,15 +18,15 @@ Replace x with the appropriate shell.
 
 Shells supported:
 
-- bash
 - fish
-- zsh
 
 ---
 
 Then source the file or restart the shell.
 
-Now use cd normally to remember paths
+Use zremember to remember paths (like bookmarking).
+
+Use zforget to forget the current path.
 
 And use z to jump to locations
 
@@ -43,3 +47,5 @@ It's possible to use multiple keywords to specify path hierarchy:
 "z code tetris" matches paths like `/code/something/tetris`. 
 
 'D' (shift + d) removes an entry from the file while on the prompt.
+
+"zclearpaths" can be used to empty the path file (forget all the paths).
