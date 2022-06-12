@@ -1,6 +1,5 @@
 # Imports
 import re
-import curses
 from sys import argv
 from sys import stderr
 from os import getenv
@@ -63,109 +62,6 @@ class MatchList:
   def empty(self) -> bool:
     return len(self.items) == 0
 
-# Show relevant paths to pick from
-# Up/Down arrows and Enter
-class Prompt:
-  def __init__(self, options: List[str]) -> None:
-    self.options = options
-    self.pos = 0
-
-  # Start the curses screen
-  def start(self) -> None:
-    self.screen = curses.initscr()
-    self.screen.keypad(True)
-    curses.noecho()
-    curses.curs_set(0)
-    self.refresh()
-    self.key_listener()
-
-  # Stop the curses screen
-  def stop(self) -> None:
-    curses.endwin()
-
-  # Print a higlighted option
-  def print_reverse(self, y: int, path: str) -> None:
-    self.screen.addstr(y, 2, path, curses.A_REVERSE)
-
-  # Print a normal option
-  def print_normal(self, y: int, path: str) -> None:
-    self.screen.addstr(y, 2, path, curses.A_NORMAL)
-
-  # Print the options again
-  # Highlight the current one
-  def refresh(self) -> None:
-    self.screen.clear()
-
-    for i, path in enumerate(self.options):
-      try:
-        if i == self.pos:
-          self.print_reverse(i + 1, path)
-        else:
-          self.print_normal(i + 1, path)
-      except:
-        self.options = self.options[0:i]
-        return
-
-  # Key detection loop
-  def key_listener(self) -> None:
-    try:
-      while True:
-        char = self.screen.getch()
-        if char in [ord('q'), ord('Q'), 27]:
-          self.stop()
-          break
-        elif char == ord('D'):
-          forget_path(self.options[self.pos], True)
-          update_file()
-          self.remove_option()
-          if len(self.options) == 0:
-            self.stop()
-            break
-          if self.pos >= len(self.options):
-            self.on_up()
-
-        elif char in [curses.KEY_UP, curses.KEY_BACKSPACE, ord('k')]:
-          self.on_up()
-        elif char in [curses.KEY_DOWN, ord(' '), ord('j')]:
-          self.on_down()
-        elif char == 10:
-          self.stop()
-          self.on_enter()
-          break
-    except:
-      self.stop()
-
-  # Index of the last option
-  def last(self) -> int:
-    return len(self.options) - 1
-
-  # Up arrow
-  def on_up(self) -> None:
-    self.pos -= 1
-    if self.pos < 0:
-      self.pos = self.last()
-    self.refresh()
-
-  # Down arrow
-  def on_down(self) -> None:
-    self.pos += 1
-    if self.pos > self.last():
-      self.pos = 0
-    self.refresh()
-
-  # When an option gets selected
-  def on_enter(self) -> None:
-    print(self.options[self.pos])
-  
-  # When an option is set to be removed
-  def remove_option(self) -> None:
-    new_options = []
-    for option in self.options:
-      if option != self.options[self.pos]:
-        new_options.append(option)
-    self.options = new_options
-    self.refresh()
-
 # Get arguments. Might exit here
 def get_args() -> None:
   global mode
@@ -178,6 +74,9 @@ def get_args() -> None:
     exit(1)
 
   keyw = " ".join(args[1:]) if len(args) > 1 else ""
+  
+  if mode == "jump" and keyw == "":
+    exit(1)
 
 # Read the paths file plus other paths
 def get_paths() -> None:
@@ -233,6 +132,7 @@ def forget_path(path: str, subpaths: bool) -> None:
 def get_parts(path: str) -> List[str]:
   return list(filter(lambda x: x != "", path.split("/")))
 
+# Remove similar items
 def check_syms(list_1: MatchList, list_2: MatchList) -> None:
   for p in list_1.items:
     if p not in list_2.items:
@@ -245,7 +145,12 @@ def check_syms(list_1: MatchList, list_2: MatchList) -> None:
         continue
       if ppx == res:
         list_2.items.remove(pp)
-        break  
+        break
+
+# Remove pwd from list
+def remove_pwd(lst: MatchList) -> None:
+  if pwd in lst.items:
+    lst.items.remove(pwd)
 
 # Find matching paths
 # Exact parts, startswith, and includes
@@ -287,6 +192,10 @@ def get_matches(keywords: List[str]) -> MatchList:
   check_syms(p_exact, exact)
   check_syms(p_starts, starts)
   check_syms(p_includes, includes)
+
+  remove_pwd(exact)
+  remove_pwd(starts)
+  remove_pwd(includes)
   
   if exact.len() > 0:
     if exact.len() == 1:
@@ -319,14 +228,6 @@ def update_file() -> None:
 def clean_path(path: str) -> str:
   return path.rstrip("/")
 
-# Save the paths file
-def update_paths(path: str) -> None:
-  if paths[0] != path:
-    filter_path(path)
-    update_file()
-  if is_pwd(path):
-    info("Already at path")
-
 # List the paths file
 def list_paths() -> None:
   for path in paths:
@@ -352,18 +253,11 @@ def jump() -> None:
   keywords = list(filter(lambda x: x != "", \
     re.split("\\s|/", keyw)))
 
-  if len(keywords) == 0:
-    Prompt(paths[0:max_matches]).start()
+  matches = get_matches(keywords)
+  if not matches.empty(): 
+    print(matches.first())
   else:
-    matches = get_matches(keywords)
-    if not matches.empty():
-      if matches.len() > 1:
-        Prompt(matches.slice(max_matches)).start()
-      else:
-        path = matches.first()
-        print(path)
-    else:
-      info("No paths found")
+    info("No paths found")
 
 # Show a message
 def info(msg: str) -> None:
