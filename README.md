@@ -1,4 +1,4 @@
-News: Now it doesn't remember automatically, it uses zremember and zforget,
+News: Now it doesn't remember automatically, it uses zremember and zforget.
 
 News: It now uses ~/.config/ezkl/paths.txt
 
