@@ -38,6 +38,6 @@ It's possible to use multiple keywords to specify path hierarchy:
 
 "z code tetris" matches paths like `/code/something/tetris`. 
 
-"zlistpaths" can be used to list all the remembered paths.
+"zlist" can be used to list all the remembered paths.
 
-"zclearpaths" can be used to empty the path file (forget all the paths).
+"zclear" can be used to empty the path file (forget all the paths).
