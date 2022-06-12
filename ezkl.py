@@ -2,12 +2,21 @@
 import re
 import curses
 from sys import argv
+from sys import stderr
 from os import getenv
 from typing import List, Match
 from pathlib import Path
 
-# Code to return
-return_code = 0
+# Settings
+max_paths: int = 500
+max_matches: int = 10
+
+# Globals
+mode: str
+keyw: str
+paths: List[str]
+filepath: Path
+pwd: str
 
 # List of matches
 class MatchList:
@@ -146,9 +155,7 @@ class Prompt:
 
   # When an option gets selected
   def on_enter(self) -> None:
-    global return_code
-    update_paths(self.options[self.pos])
-    return_code = 33
+    print(self.options[self.pos])
   
   # When an option is set to be removed
   def remove_option(self) -> None:
@@ -158,48 +165,6 @@ class Prompt:
         new_options.append(option)
     self.options = new_options
     self.refresh()
-
-# Settings
-max_paths: int = 500
-max_matches: int = 10
-
-# Globals
-mode: str
-keyw: str
-paths: List[str]
-filepath: Path
-pwd: str
-
-# Main function
-def main() -> None:
-  get_args()
-  get_paths()
-
-  if mode == "remember":
-    filter_path(pwd)
-    update_file()
-    info("Path remembered")
-
-  elif mode == "forget":
-    if keyw != "":
-      forget_path(keyw, True)
-    else:
-      forget_path(pwd, True)
-    update_file()
-    info("Path forgotten")
-
-  elif mode == "listpaths":
-    list_paths()    
-  
-  elif mode == "clearpaths":
-    ans = input("Are you sure? (y/n): ")
-    if ans == "y":
-      clear_paths()
-
-  elif mode == "jump":
-    jump()
-  
-  exit(return_code)
 
 # Get arguments. Might exit here
 def get_args() -> None:
@@ -380,8 +345,6 @@ def is_pwd(path: str) -> bool:
 
 # Main jump function
 def jump() -> None:
-  global return_code
-
   if len(paths) == 0:
     info("No paths remembered yet")
     exit(1)
@@ -398,14 +361,13 @@ def jump() -> None:
         Prompt(matches.slice(max_matches)).start()
       else:
         path = matches.first()
-        update_paths(path)
-        return_code = 33
+        print(path)
     else:
       info("No paths found")
 
 # Show a message
 def info(msg: str) -> None:
-  print(f"ezkl: {msg}")
+  print(f"ezkl: {msg}", file=stderr)
 
 # Check if path is valid
 def is_valid_path(path: str, keywords: List[str], mode: int) -> bool:
@@ -424,5 +386,34 @@ def is_valid_path(path: str, keywords: List[str], mode: int) -> bool:
 
   return bool(re.search(rstr, path.lower()))
 
+# Main function
+def main() -> None:
+  get_args()
+  get_paths()
+
+  if mode == "remember":
+    filter_path(pwd)
+    update_file()
+    info("Path remembered")
+
+  elif mode == "forget":
+    if keyw != "":
+      forget_path(keyw, True)
+    else:
+      forget_path(pwd, True)
+    update_file()
+    info("Path forgotten")
+
+  elif mode == "listpaths":
+    list_paths()    
+  
+  elif mode == "clearpaths":
+    ans = input("Are you sure? (y/n): ")
+    if ans == "y":
+      clear_paths()
+
+  elif mode == "jump":
+    jump()
+  
 # Program starts here
 if __name__ == "__main__": main()
