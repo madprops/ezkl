@@ -19,9 +19,9 @@ function z
   # Find a path to cd to
   python "$zdir"/ezkl.py jump "$argv"
 
-  if [ $status = "0" ]
+  if [ $status = "33" ]
     set zpath (head -n 1 "$HOME/.config/ezkl/paths.txt")
-    
+
     # Try to cd to path
     cd "$zpath"
 

@@ -6,6 +6,9 @@ from os import getenv
 from typing import List, Match
 from pathlib import Path
 
+# Code to return
+return_code = 0
+
 # List of matches
 class MatchList:
   items: List[str]
@@ -143,7 +146,9 @@ class Prompt:
 
   # When an option gets selected
   def on_enter(self) -> None:
+    global return_code
     update_paths(self.options[self.pos])
+    return_code = 33
   
   # When an option is set to be removed
   def remove_option(self) -> None:
@@ -190,6 +195,8 @@ def main() -> None:
 
   elif mode == "jump":
     jump()
+  
+  exit(return_code)
 
 # Get arguments. Might exit here
 def get_args() -> None:
@@ -364,6 +371,8 @@ def is_pwd(path: str) -> bool:
 
 # Main jump function
 def jump() -> None:
+  global return_code
+
   if len(paths) == 0:
     info("No paths remembered yet")
     exit(1)
@@ -381,9 +390,9 @@ def jump() -> None:
       else:
         path = matches.first()
         update_paths(path)
+        return_code = 33
     else:
       info("No paths found")
-      exit(1)
 
 # Show a message
 def info(msg: str) -> None:
