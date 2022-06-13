@@ -129,24 +129,28 @@ def get_parts(path: str) -> List[str]:
   return list(filter(lambda x: x != "", path.split("/")))
 
 # Remove similar items
-def check_syms(list_1: MatchList, list_2: MatchList) -> None:
+def check_syms(list_1: MatchList, list_2: MatchList) -> None:  
+  pwd_2 = Path(pwd)
+
   for p in list_1.items:
     if p not in list_2.items:
       continue
+      
     px = Path(p)
-    res = px.resolve()
-    for pp in list_2.items:
-      ppx = Path(pp)
-      if px == ppx:
-        continue
-      if ppx == res:
-        list_2.items.remove(pp)
-        break
-
-# Remove pwd from list
-def remove_pwd(lst: MatchList) -> None:
-  if pwd in lst.items:
-    lst.items.remove(pwd)
+    rslv = px.resolve()
+    
+    if px == pwd or px == pwd_2:
+      list_2.items.remove(p)
+    elif rslv == pwd or rslv == pwd_2:
+      list_2.items.remove(p)      
+    else:
+      for pp in list_2.items:
+        ppx = Path(pp)
+        if px == ppx:
+          continue
+        if ppx == rslv:
+          list_2.items.remove(pp)
+          break
 
 # Find matching paths
 # Exact parts, startswith, and includes
@@ -189,10 +193,6 @@ def get_matches(keywords: List[str]) -> MatchList:
   check_syms(p_starts, starts)
   check_syms(p_includes, includes)
 
-  remove_pwd(exact)
-  remove_pwd(starts)
-  remove_pwd(includes)
-  
   if exact.len() > 0:
     if exact.len() == 1:
       return exact
