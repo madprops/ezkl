@@ -18,7 +18,7 @@ Use `z` to remember paths (like bookmarking).
 
 Use `zforget` to forget the current path.
 
-Use z to jump to locations.
+Use `z keyword` to jump to locations.
 
 It forgets paths (from paths.txt) that don't seem to exist anymore.
 
