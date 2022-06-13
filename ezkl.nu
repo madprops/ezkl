@@ -18,9 +18,9 @@ export def zclear [] {
   python (script_path) clear
 }
 
-export def-env z [arg = ""] {
-  let ans = (if $arg != "" {
-    let zpath = (python (script_path) jump $arg)
+export def-env z [...args] {
+  let ans = (if ($args | length) > 0 {
+    let zpath = (python (script_path) jump $args)
     
     if $zpath != "" {
       $zpath
