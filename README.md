@@ -1,45 +1,24 @@
-News: Now it doesn't remember automatically, z with no arguments remembers path
-
-News: It now uses ~/.config/ezkl/paths.txt
-
----
-
-Git clone this somewhere, then add this to your shell's config file:
+Installing on Fish:
 
 ```
-source /path/to/ezkl/ezkl.x.sh
+set -g EZKL_PATH "/home/yo/code/ezkl"
+source /home/yo/code/ezkl/ezkl.fish
 ```
 
-Replace x with the appropriate shell.
-
----
-
-Shells supported:
-
-- fish
-
-- nushell
-
----
-
-For nushell add something like this to config.nu
+Installing on Nu:
 
 ```
 let-env EZKL_PATH = "/home/yo/code/ezkl"
 use /home/yo/code/ezkl/ezkl.nu *
 ```
 
-Then source the file or restart the shell.
+---
 
 Use `z` to remember paths (like bookmarking).
 
 Use `zforget` to forget the current path.
 
-And use z to jump to locations
-
-`cd /some/path`
-
-`z something`
+Use z to jump to locations.
 
 It forgets paths (from paths.txt) that don't seem to exist anymore.
 
