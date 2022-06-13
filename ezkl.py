@@ -139,18 +139,16 @@ def check_syms(list_1: MatchList, list_2: MatchList) -> None:
     px = Path(p)
     rslv = px.resolve()
     
-    if px == pwd or px == pwd_2:
+    if px == pwd or px == pwd_2 or rslv == pwd or rslv == pwd_2:
       list_2.items.remove(p)
-    elif rslv == pwd or rslv == pwd_2:
-      list_2.items.remove(p)      
-    else:
-      for pp in list_2.items:
-        ppx = Path(pp)
-        if px == ppx:
-          continue
-        if ppx == rslv:
-          list_2.items.remove(pp)
-          break
+
+    for pp in list_2.items:
+      ppx = Path(pp)
+      if px == ppx:
+        continue
+      if ppx == rslv:
+        list_2.items.remove(pp)
+        break
 
 # Find matching paths
 # Exact parts, startswith, and includes
