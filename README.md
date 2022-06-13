@@ -16,16 +16,14 @@ use /home/yo/code/ezkl/ezkl.nu *
 
 Use `z` to remember paths (like bookmarking).
 
-Use `zforget` to forget the current path.
-
 Use `z keyword` to jump to locations.
-
-It forgets paths (from paths.txt) that don't seem to exist anymore.
 
 It's possible to use multiple keywords to specify path hierarchy:
 
-`z code tetris` matches paths like `/code/something/tetris`. 
+`z code tetris` matches paths like `/code/something/tetris`.
 
-`zlist` can be used to list all the remembered paths.
+`zforget` can be used to forget the current path.
 
-`zclear` can be used to empty the path file (forget all the paths).
+`zclear` can be used to forget all the paths.
+
+`zlist` can be used to list all remembered paths.
