@@ -1,7 +1,6 @@
 # Imports
 import re
-from sys import argv
-from sys import stderr
+from sys import argv, stderr
 from os import getenv
 from typing import List, Match
 from pathlib import Path
@@ -279,9 +278,12 @@ def main() -> None:
   get_paths()
 
   if mode == "remember":
-    filter_path(pwd)
-    update_file()
-    info("Path remembered")
+    if pwd in paths:
+      info("Path already remembered")
+    else:
+      filter_path(pwd)
+      update_file()
+      info("Path remembered")
 
   elif mode == "forget":
     if keyw != "":
