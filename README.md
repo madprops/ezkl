@@ -1,3 +1,10 @@
+Installing on Bash or ZSH:
+
+```
+export EZKL_PATH="/home/yo/code/ezkl"
+source /home/yo/code/ezkl/ezkl.bash
+```
+
 Installing on Fish:
 
 ```
