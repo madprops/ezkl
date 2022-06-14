@@ -244,9 +244,13 @@ def list_paths() -> None:
 # Clear the paths file
 def clear_paths() -> None:
   global paths
-  paths = []
-  update_file()
-  info("Paths cleared")
+
+  ans = input("Forget all paths? (y/n): ")
+  
+  if ans == "y":
+    paths = []
+    update_file()
+    info("Paths cleared")
 
 # Check if path is the current directory
 def is_pwd(path: str) -> bool:
@@ -306,9 +310,7 @@ def main() -> None:
     list_paths()    
   
   elif mode == "clear":
-    ans = input("Forget all paths? (y/n): ")
-    if ans == "y":
-      clear_paths()
+    clear_paths()
 
   elif mode == "jump":
     jump()
