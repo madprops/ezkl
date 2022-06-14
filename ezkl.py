@@ -106,22 +106,38 @@ def filter_path(path: str) -> None:
 
   paths = pths
 
+# Remember path
+def remember_path(path: str) -> None:
+  if path in paths:
+    info("Path already remembered")
+  else:
+    filter_path(path)
+    update_file()
+    info("Path remembered")
+
 # Remove path and subdirs
 def forget_path(path: str, subpaths: bool) -> None:
   global paths
-  pths: List[str] = []
 
-  for p in paths:
-    if subpaths:
-      if p == path or p.startswith(path + "/"):
-        continue
-    else:
-      if p == path:
-        continue
+  if path not in paths:
+    info("Path is not remembered")
+  else:
+    pths: List[str] = []
 
-    pths.append(p)
+    for p in paths:
+      if subpaths:
+        if p == path or p.startswith(path + "/"):
+          continue
+      else:
+        if p == path:
+          continue
 
-  paths = pths
+      pths.append(p)
+
+    paths = pths
+
+    update_file()
+    info("Path forgotten")
 
 # Get the parts of a path
 def get_parts(path: str) -> List[str]:
@@ -278,20 +294,13 @@ def main() -> None:
   get_paths()
 
   if mode == "remember":
-    if pwd in paths:
-      info("Path already remembered")
-    else:
-      filter_path(pwd)
-      update_file()
-      info("Path remembered")
+    remember_path(pwd)
 
   elif mode == "forget":
     if keyw != "":
       forget_path(keyw, True)
     else:
       forget_path(pwd, True)
-    update_file()
-    info("Path forgotten")
 
   elif mode == "list":
     list_paths()    
