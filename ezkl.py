@@ -269,7 +269,7 @@ def jump() -> None:
   if not matches.empty(): 
     print(matches.first())
   else:
-    info("No paths found")
+    info("No path found")
 
 # Show a message
 def info(msg: str) -> None:
