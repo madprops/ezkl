@@ -264,7 +264,7 @@ def jump() -> None:
 
   keywords = list(filter(lambda x: x != "", \
     re.split("\\s|/", keyw)))
-
+  
   matches = get_matches(keywords)
   if not matches.empty(): 
     print(matches.first())
@@ -277,7 +277,7 @@ def info(msg: str) -> None:
 
 # Check if path is valid
 def is_valid_path(path: str, keywords: List[str], mode: int) -> bool:
-  lowkeywords = map(lambda x: x.lower(), keywords)
+  lowkeywords = map(lambda x: x.lower().replace(".", ""), keywords)
 
   if mode == 1:
     # Mode for startswith
@@ -290,7 +290,8 @@ def is_valid_path(path: str, keywords: List[str], mode: int) -> bool:
   else:
     return False
 
-  return bool(re.search(rstr, path.lower()))
+  p = path.lower().replace(".", "")
+  return bool(re.search(rstr, p))
 
 # Main function
 def main() -> None:
