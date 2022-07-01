@@ -34,3 +34,5 @@ It's possible to use multiple keywords to specify path hierarchy:
 `zclear` can be used to forget all the paths.
 
 `zlist` can be used to list all remembered paths.
+
+If more than one matches are found, rofi is shown to pick one.
