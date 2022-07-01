@@ -267,13 +267,17 @@ def jump() -> None:
   
   matches = get_matches(keywords)
   if not matches.empty(): 
+    if len(matches.items) > 1:
+      for m in matches.items[1:]:
+        info(m, "Also")
+
     print(matches.first())
   else:
     info("No path found")
 
 # Show a message
-def info(msg: str) -> None:
-  print(f"ezkl: {msg}", file=stderr)
+def info(msg: str, title = "ezkl") -> None:
+  print(f"{title}: {msg}", file=stderr)
 
 # Check if path is valid
 def is_valid_path(path: str, keywords: List[str], mode: int) -> bool:
