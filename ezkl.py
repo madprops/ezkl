@@ -4,6 +4,7 @@ from sys import argv, stderr
 from os import getenv
 from typing import List, Match
 from pathlib import Path
+from subprocess import Popen, PIPE
 
 # Globals
 mode: str
@@ -69,7 +70,7 @@ def get_args() -> None:
     exit(1)
 
   keyw = " ".join(args[1:]) if len(args) > 1 else ""
-  
+
   if mode == "jump" and keyw == "":
     exit(1)
 
@@ -80,7 +81,7 @@ def get_paths() -> None:
   global pwd
 
   configdir = Path("~/.config/ezkl").expanduser()
-  
+
   if not configdir.exists():
     configdir.mkdir(parents=True)
 
@@ -144,18 +145,13 @@ def get_parts(path: str) -> List[str]:
   return list(filter(lambda x: x != "", path.split("/")))
 
 # Remove similar items
-def check_syms(list_1: MatchList, list_2: MatchList) -> None:  
-  pwd_2 = Path(pwd)
-
+def check_syms(list_1: MatchList, list_2: MatchList) -> None:
   for p in list_1.items:
     if p not in list_2.items:
       continue
-      
+
     px = Path(p)
     rslv = px.resolve()
-    
-    if px == pwd or px == pwd_2 or rslv == pwd or rslv == pwd_2:
-      list_2.items.remove(p)
 
     for pp in list_2.items:
       ppx = Path(pp)
@@ -193,7 +189,7 @@ def get_matches(keywords: List[str]) -> MatchList:
           if not p_includes.has(partjoin):
             if is_valid_path(partjoin, keywords, 2):
               p_includes.add(partjoin)
-  
+
   exact = MatchList()
   starts = MatchList()
   includes = MatchList()
@@ -201,7 +197,7 @@ def get_matches(keywords: List[str]) -> MatchList:
   exact.items = p_exact.items[:]
   starts.items = p_starts.items[:]
   includes.items = p_includes.items[:]
-  
+
   check_syms(p_exact, exact)
   check_syms(p_starts, starts)
   check_syms(p_includes, includes)
@@ -246,15 +242,20 @@ def clear_paths() -> None:
   global paths
 
   ans = input("Forget all paths? (y/n): ")
-  
+
   if ans == "y":
     paths = []
     update_file()
     info("Paths cleared")
 
-# Check if path is the current directory
-def is_pwd(path: str) -> bool:
-  return Path(path) == Path(pwd)
+# Select a match with rofi
+def select_match(matches: MatchList) -> None:
+  cmd = 'rofi -dmenu -markup-rows -p "Select one of the matches"'
+  proc = Popen(cmd, stdout=PIPE, stdin=PIPE, shell=True, text=True)
+  ans = proc.communicate("\n".join(matches.items))[0].strip()
+
+  if ans != "":
+    print(ans)
 
 # Main jump function
 def jump() -> None:
@@ -264,19 +265,18 @@ def jump() -> None:
 
   keywords = list(filter(lambda x: x != "", \
     re.split("\\s|/", keyw)))
-  
-  matches = get_matches(keywords)
-  if not matches.empty(): 
-    if len(matches.items) > 1:
-      for m in matches.items[1:]:
-        info(m, "Also")
 
-    print(matches.first())
+  matches = get_matches(keywords)
+  if not matches.empty():
+    if len(matches.items) > 1:
+      select_match(matches)
+    else:
+      print(matches.first())
   else:
     info("No path found")
 
 # Show a message
-def info(msg: str, title = "ezkl") -> None:
+def info(msg: str, title: str = "ezkl") -> None:
   print(f"{title}: {msg}", file=stderr)
 
 # Check if path is valid
@@ -312,13 +312,13 @@ def main() -> None:
       forget_path(pwd, True)
 
   elif mode == "list":
-    list_paths()    
-  
+    list_paths()
+
   elif mode == "clear":
     clear_paths()
 
   elif mode == "jump":
     jump()
-  
+
 # Program starts here
 if __name__ == "__main__": main()
