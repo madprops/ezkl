@@ -75,7 +75,7 @@ def get_args() -> None:
     info("list = list paths")
     info("clear = forget all paths")
     info("----")
-    info("Create an alias in your shell for 'cd (ezkl jump something)'")
+    info("Create an alias in your shell for 'cd $(ezkl jump something)'")
     exit(0)
 
   if mode not in ["remember", "forget", "jump", "list", "clear"]:
