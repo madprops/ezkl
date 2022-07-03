@@ -1,38 +1,33 @@
-Installing on Bash or ZSH:
+There is an aur package.
+
+Use `ezkl remember` to remember paths (like bookmarking).
+
+Use `ezkl jump` to jump to locations.
+
+The actual command to jump is:
+
+`cd $(ezkl jump something)`
+
+But that's a bit long so you should make an alias function in your shell.
+
+This is a fish function, for example:
 
 ```
-export EZKL_PATH="/home/yo/code/ezkl"
-source /home/yo/code/ezkl/ezkl.bash
+function z
+  cd $(ezkl jump "$argv")
+end
 ```
 
-Installing on Fish:
-
-```
-set -g EZKL_PATH "/home/yo/code/ezkl"
-source /home/yo/code/ezkl/ezkl.fish
-```
-
-Installing on Nu:
-
-```
-let-env EZKL_PATH = "/home/yo/code/ezkl"
-use /home/yo/code/ezkl/ezkl.nu *
-```
-
----
-
-Use `z` to remember paths (like bookmarking).
-
-Use `z keyword` to jump to locations.
+And maybe an alias for `ezkl remember` to use it quickly.
 
 It's possible to use multiple keywords to specify path hierarchy:
 
-`z code tetris` matches paths like `/code/something/tetris`.
+`code tetris` matches paths like `/code/something/tetris`.
 
-`zforget` can be used to forget the current path.
+`ezkl forget` can be used to forget the current path.
 
-`zclear` can be used to forget all the paths.
+`ezkl clear` can be used to forget all the paths.
 
-`zlist` can be used to list all remembered paths.
+`ezkl list` can be used to list all remembered paths.
 
 If more than one matches are found, rofi is shown to pick one.

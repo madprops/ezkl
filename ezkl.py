@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Imports
 import re
 from sys import argv, stderr
