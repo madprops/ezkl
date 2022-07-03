@@ -68,6 +68,16 @@ def get_args() -> None:
   args = argv[1:]
   mode = args[0] if len(args) > 0 else ""
 
+  if mode == "":
+    info("remember = remember path")
+    info("jump arg = jump to path")
+    info("forget = forget path")
+    info("list = list paths")
+    info("clear = forget all paths")
+    info("----")
+    info("Create an alias in your shell for 'cd (ezkl jump something)'")
+    exit(0)
+
   if mode not in ["remember", "forget", "jump", "list", "clear"]:
     exit(1)
 
@@ -321,6 +331,6 @@ def main() -> None:
 
   elif mode == "jump":
     jump()
-
+  
 # Program starts here
 if __name__ == "__main__": main()
