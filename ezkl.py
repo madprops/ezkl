@@ -84,13 +84,18 @@ def get_args() -> None:
   keyw = " ".join(args[1:]) if len(args) > 1 else ""
 
   if mode == "jump" and keyw == "":
-    exit(1)
+    print(pwd)
+    exit(0)
+
+# Get current working directory
+def get_pwd() -> None:
+  global pwd
+  pwd = clean_path(str(getenv("PWD")))
 
 # Read the paths file plus other paths
 def get_paths() -> None:
   global paths
   global filepath
-  global pwd
 
   configdir = Path("~/.config/ezkl").expanduser()
 
@@ -105,7 +110,6 @@ def get_paths() -> None:
   paths = list(map(str.strip, paths))
   paths = list(filter(None, paths))
   file.close()
-  pwd = clean_path(str(getenv("PWD")))
 
 # Put path in first line
 def filter_path(path: str) -> None:
@@ -313,6 +317,7 @@ def is_valid_path(path: str, keywords: List[str], mode: int) -> bool:
 
 # Main function
 def main() -> None:
+  get_pwd()
   get_args()
   get_paths()
 
