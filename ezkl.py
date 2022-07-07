@@ -279,13 +279,14 @@ def jump() -> None:
     re.split("\\s|/", keyw)))
 
   matches = get_matches(keywords)
+  
   if not matches.empty():
     if len(matches.items) > 1:
       select_match(matches)
     else:
       print(matches.first())
   else:
-    info("No path found")
+    print(pwd)
 
 # Show a message
 def info(msg: str, title: str = "ezkl") -> None:
