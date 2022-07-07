@@ -286,6 +286,7 @@ def jump() -> None:
     else:
       print(matches.first())
   else:
+    info("No path found")
     print(pwd)
 
 # Show a message
