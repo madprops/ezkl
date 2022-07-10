@@ -2,6 +2,8 @@ There is an aur package.
 
 Use `ezkl remember` to remember paths (like bookmarking).
 
+No argument uses the current dir, or it uses an argument path.
+
 Use `ezkl jump` to jump to locations.
 
 The actual command to jump is:
@@ -14,7 +16,13 @@ This is a fish function, for example:
 
 ```
 function z
-  cd $(ezkl jump "$argv")
+  set p $(ezkl jump "$argv")
+
+  cd "$p"
+
+  if test $status != 0
+     ezkl forget "$p"
+  end
 end
 ```
 
@@ -24,7 +32,9 @@ It's possible to use multiple keywords to specify path hierarchy:
 
 `code tetris` matches paths like `/code/something/tetris`.
 
-`ezkl forget` can be used to forget the current path.
+`ezkl forget` can be used to forget the current path. 
+
+No argument uses the current dir, or it uses an argument path.
 
 `ezkl clear` can be used to forget all the paths.
 
