@@ -265,7 +265,7 @@ def clear_paths() -> None:
 
 # Select a match with rofi
 def select_match(matches: MatchList) -> None:
-  cmd = 'rofi -dmenu -markup-rows -p "Select one of the matches"'
+  cmd = 'rofi -dmenu -markup-rows -p "Select one of the matches" -theme-str "window {height: 200px;}"'
   proc = Popen(cmd, stdout=PIPE, stdin=PIPE, shell=True, text=True)
   ans = proc.communicate("\n".join(matches.items))[0].strip()
 
