@@ -18,10 +18,12 @@ This is a fish function, for example:
 function z
   set p $(ezkl jump "$argv")
 
-  cd "$p"
+  if test -n "$p"
+    cd "$p"
 
-  if test $status != 0
-     ezkl forget "$p"
+    if test $status != 0
+      ezkl forget "$p"
+    end
   end
 end
 ```

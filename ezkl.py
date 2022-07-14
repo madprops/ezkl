@@ -84,7 +84,6 @@ def get_args() -> None:
   keyw = " ".join(args[1:]) if len(args) > 1 else ""
 
   if mode == "jump" and keyw == "":
-    print(pwd)
     exit(0)
 
 # Get current working directory
@@ -291,7 +290,6 @@ def jump() -> None:
       print(matches.first())
   else:
     info("No path found")
-    print(pwd)
 
 # Show a message
 def info(msg: str, title: str = "ezkl") -> None:
