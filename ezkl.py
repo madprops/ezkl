@@ -59,6 +59,10 @@ class MatchList:
   # Check if there are no items
   def empty(self) -> bool:
     return len(self.items) == 0
+  
+  # Remove item
+  def remove(self, value):
+    self.items.remove(value)
 
 # Get arguments. Might exit here
 def get_args() -> None:
@@ -132,28 +136,26 @@ def remember_path(path: str) -> None:
     info("Path remembered")
 
 # Remove path and subdirs
-def forget_path(path: str, subpaths: bool) -> None:
+def forget_path(path: str) -> None:
   global paths
+  path_included = False
 
-  if path not in paths:
+  if not any(path in p for p in paths):
     info("Path is not remembered")
-  else:
-    pths: List[str] = []
+    return
 
-    for p in paths:
-      if subpaths:
-        if p == path or p.startswith(path + "/"):
-          continue
-      else:
-        if p == path:
-          continue
+  pths: List[str] = []
 
-      pths.append(p)
+  for p in paths:
+    if p == path or p.startswith(path + "/"):
+      continue
 
-    paths = pths
+    pths.append(p)
 
-    update_file()
-    info("Path forgotten")
+  paths = pths
+
+  update_file()
+  info("Path forgotten")
 
 # Get the parts of a path
 def get_parts(path: str) -> List[str]:
@@ -265,12 +267,19 @@ def clear_paths() -> None:
 
 # Select a match with rofi
 def select_match(matches: MatchList) -> None:
-  cmd = 'rofi -dmenu -markup-rows -p "Select one of the matches" -theme-str "window {height: 200px;}"'
+  cmd = 'rofi -dmenu -markup-rows -p "Select Match (Alt+1 Forget)" -theme-str "window {height: 200px;}"'
   proc = Popen(cmd, stdout=PIPE, stdin=PIPE, shell=True, text=True)
   ans = proc.communicate("\n".join(matches.items))[0].strip()
 
   if ans != "":
-    print(ans)
+    code = proc.returncode
+    if code == 10:
+      forget_path(ans)
+      matches.remove(ans)
+      select_match(matches)
+      return
+    else:
+      print(ans)
 
 # Main jump function
 def jump() -> None:
@@ -324,9 +333,9 @@ def main() -> None:
 
   elif mode == "forget":
     if keyw != "":
-      forget_path(keyw, True)
+      forget_path(keyw)
     else:
-      forget_path(pwd, True)
+      forget_path(pwd)
 
   elif mode == "list":
     list_paths()
