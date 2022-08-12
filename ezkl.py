@@ -158,7 +158,6 @@ def forget_path(path: str) -> None:
   info("Path forgotten")
 
 # Find matching paths
-# Exact parts, startswith, and includes
 def get_matches(keyword: str) -> MatchList:
   matches = MatchList()
   lowkeyword = keyword.lower()
