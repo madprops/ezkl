@@ -140,14 +140,14 @@ def forget_path(path: str) -> None:
   global paths
   path_included = False
 
-  if not any(path in p for p in paths):
+  if path not in paths:
     info("Path is not remembered")
     return
 
   pths: List[str] = []
 
   for p in paths:
-    if p == path or p.startswith(path + "/"):
+    if p == path:
       continue
 
     pths.append(p)
@@ -157,87 +157,17 @@ def forget_path(path: str) -> None:
   update_file()
   info("Path forgotten")
 
-# Get the parts of a path
-def get_parts(path: str) -> List[str]:
-  return list(filter(lambda x: x != "", path.split("/")))
-
-# Remove similar items
-def check_syms(list_1: MatchList, list_2: MatchList) -> None:
-  for p in list_1.items:
-    if p not in list_2.items:
-      continue
-
-    px = Path(p)
-    rslv = px.resolve()
-
-    for pp in list_2.items:
-      ppx = Path(pp)
-      if px == ppx:
-        continue
-      if ppx == rslv:
-        list_2.items.remove(pp)
-        break
-
 # Find matching paths
 # Exact parts, startswith, and includes
-def get_matches(keywords: List[str]) -> MatchList:
-  p_exact = MatchList()
-  p_starts = MatchList()
-  p_includes = MatchList()
+def get_matches(keyword: str) -> MatchList:
+  matches = MatchList()
+  lowkeyword = keyword.lower()
 
-  for keyword in keywords:
-    lowkeyword = keyword.lower()
-    for path in paths:
-      parts = get_parts(path)
-      partlist: List[str] = []
-      for part in parts:
-        partlist.append(part)
-        lowpart = part.lower()
-        partjoin = "/" + "/".join(partlist)
-        if lowkeyword == lowpart:
-          if not p_exact.has(partjoin):
-            if is_valid_path(partjoin, keywords, 1):
-              p_exact.add(partjoin)
-        elif lowpart.startswith(lowkeyword):
-          if not p_starts.has(partjoin):
-            if is_valid_path(partjoin, keywords, 1):
-              p_starts.add(partjoin)
-        elif lowkeyword in lowpart:
-          if not p_includes.has(partjoin):
-            if is_valid_path(partjoin, keywords, 2):
-              p_includes.add(partjoin)
-
-  exact = MatchList()
-  starts = MatchList()
-  includes = MatchList()
-
-  exact.items = p_exact.items[:]
-  starts.items = p_starts.items[:]
-  includes.items = p_includes.items[:]
-
-  check_syms(p_exact, exact)
-  check_syms(p_starts, starts)
-  check_syms(p_includes, includes)
-
-  if exact.len() > 0:
-    if exact.len() == 1:
-      return exact
-    else:
-      exact.join(starts)
-      exact.join(includes)
-      return exact
-
-  elif starts.len() > 0:
-    if starts.len() == 1:
-      return starts
-    else:
-      starts.join(includes)
-      return starts
-
-  elif includes.len() > 0:
-    return includes
-
-  return MatchList()
+  for path in paths:
+    if lowkeyword in path:
+      matches.add(path)
+  
+  return matches
 
 # Write paths to file
 def update_file() -> None:
@@ -287,10 +217,7 @@ def jump() -> None:
     info("No paths remembered yet")
     exit(1)
 
-  keywords = list(filter(lambda x: x != "", \
-    re.split("\\s|/", keyw)))
-
-  matches = get_matches(keywords)
+  matches = get_matches(keyw)
   
   if not matches.empty():
     if len(matches.items) > 1:
@@ -303,24 +230,6 @@ def jump() -> None:
 # Show a message
 def info(msg: str, title: str = "ezkl") -> None:
   print(f"{title}: {msg}", file=stderr)
-
-# Check if path is valid
-def is_valid_path(path: str, keywords: List[str], mode: int) -> bool:
-  lowkeywords = map(lambda x: x.lower().replace(".", ""), keywords)
-
-  if mode == 1:
-    # Mode for startswith
-    rstr = "/" + ".*/".join(lowkeywords) + ".*"
-
-  elif mode == 2:
-    # Mode for x in y
-    rstr = "/.*" + ".*/.*".join(lowkeywords) + ".*"
-
-  else:
-    return False
-
-  p = path.lower().replace(".", "")
-  return bool(re.search(rstr, p))
 
 # Main function
 def main() -> None:
