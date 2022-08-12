@@ -63,6 +63,10 @@ class MatchList:
   # Remove item
   def remove(self, value):
     self.items.remove(value)
+  
+  # Sort paths naturally
+  def sort(self):
+    self.items.sort()
 
 # Get arguments. Might exit here
 def get_args() -> None:
@@ -166,6 +170,7 @@ def get_matches(keyword: str) -> MatchList:
     if lowkeyword in path.lower():
       matches.add(path)
   
+  matches.sort()
   return matches
 
 # Write paths to file
