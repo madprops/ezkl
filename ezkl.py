@@ -163,7 +163,7 @@ def get_matches(keyword: str) -> MatchList:
   lowkeyword = keyword.lower()
 
   for path in paths:
-    if lowkeyword in path:
+    if lowkeyword in path.lower():
       matches.add(path)
   
   return matches
