@@ -15,15 +15,21 @@ paths: List[str]
 filepath: Path
 pwd: str
 
+# Match class
+class Match:
+  def __init__(self, path) -> None:
+    self.path = path
+    self.level = 0
+
 # List of matches
 class MatchList:
-  items: List[str]
+  items: List[Match]
 
   def __init__(self) -> None:
     self.items = []
 
   # Add an item
-  def add(self, match: str) -> None:
+  def add(self, match: Match) -> None:
     self.items.append(match)
 
   # Append two lists
@@ -33,8 +39,8 @@ class MatchList:
         self.items.append(item)
 
   # Get a slice of matches
-  def slice(self, max: int) -> List[str]:
-    paths: List[str] = []
+  def slice(self, max: int) -> List[Match]:
+    paths: List[Match] = []
 
     for m in self.items[0:max]:
       paths.append(m)
@@ -65,8 +71,29 @@ class MatchList:
     self.items.remove(value)
   
   # Sort paths naturally
-  def sort(self):
-    self.items.sort()
+  def sort(self, keyword):
+    kw = keyword.lower()
+
+    for item in self.items:
+      parts = item.path.split("/")
+      parts.reverse()
+      level = 0
+      
+      for i, p in enumerate(parts):
+        pl = p.lower()
+        if pl == kw:
+          level += 10 + (len(parts) - i)
+        elif kw in pl:
+          level += 5 + (len(parts) - i)
+      
+      item.level = level
+    
+    self.items.sort(key=lambda x: x.path, reverse=False)
+    self.items.sort(key=lambda x: x.level, reverse=True)
+  
+  # Get a list of paths
+  def paths(self) -> List[str]:
+    return [x.path for x in self.items]
 
 # Get arguments. Might exit here
 def get_args() -> None:
@@ -168,9 +195,9 @@ def get_matches(keyword: str) -> MatchList:
 
   for path in paths:
     if lowkeyword in path.lower():
-      matches.add(path)
+      matches.add(Match(path))
   
-  matches.sort()
+  matches.sort(keyword)
   return matches
 
 # Write paths to file
@@ -203,7 +230,7 @@ def clear_paths() -> None:
 def select_match(matches: MatchList) -> None:
   cmd = 'rofi -dmenu -markup-rows -p "Select Match (Alt+1 Forget)"'
   proc = Popen(cmd, stdout=PIPE, stdin=PIPE, shell=True, text=True)
-  ans = proc.communicate("\n".join(matches.items))[0].strip()
+  ans = proc.communicate("\n".join(matches.paths()))[0].strip()
 
   if ans != "":
     code = proc.returncode
