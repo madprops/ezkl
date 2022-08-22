@@ -254,7 +254,7 @@ def jump() -> None:
     if len(matches.items) > 1:
       select_match(matches)
     else:
-      print(matches.first())
+      print(matches.first().path)
   else:
     info("No path found")
 
