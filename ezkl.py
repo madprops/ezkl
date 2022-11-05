@@ -236,8 +236,6 @@ def select_match(matches: MatchList) -> None:
     code = proc.returncode
     if code == 10:
       forget_path(ans)
-      matches.remove(ans)
-      select_match(matches)
       return
     else:
       print(ans)
