@@ -270,7 +270,7 @@ def main() -> None:
     remember_path(pwd)
 
   elif mode == "forget":
-    forget_path(pwd)
+    forget_path(keyw or pwd)
 
   elif mode == "list":
     list_paths()
