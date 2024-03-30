@@ -54,7 +54,7 @@ class MatchList:
 class Args:
     mode = ""
     keyword = ""
-    extra = []
+    extra: List[str] = []
 
     @staticmethod
     def get_args() -> None:
