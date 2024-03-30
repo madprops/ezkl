@@ -75,11 +75,13 @@ class Args:
             exit(1)
 
         Args.keyword = " ".join(args[1:]) if len(args) > 1 else ""
-        cd_split = Args.keyword.split(" ")
 
-        if len(cd_split) > 1:
-            Args.keyword = cd_split[0]
-            Args.extra = cd_split[1:]
+        if Args.mode == "jump":
+            cd_split = Args.keyword.split(" ")
+
+            if len(cd_split) > 1:
+                Args.keyword = cd_split[0]
+                Args.extra = cd_split[1:]
 
         if Args.mode == "jump" and Args.keyword == "":
             exit(0)
@@ -216,17 +218,29 @@ def jump() -> None:
             select_match(matches)
         else:
             path = matches.first().path
-
-            if Args.extra:
-                for dir in Args.extra:
-                    for p in Path(path).iterdir():
-                        if p.is_dir() and p.name.startswith(dir):
-                            path += "/" + p.name
-                            break
-
+            path = resolve_extra(path)
             print(path)
     else:
         info("No path found")
+
+
+def resolve_extra(path: str) -> str:
+    if not Args.extra:
+        return path
+
+    for dir in Args.extra:
+        found = False
+
+        for p in Path(path).iterdir():
+            if p.is_dir() and p.name.startswith(dir):
+                path += "/" + p.name
+                found = True
+                break
+
+        if not found:
+            break
+
+    return path
 
 
 def info(msg: str, title: str = "ezkl") -> None:
