@@ -51,3 +51,5 @@ For example say you have the dir `~/code/ezkl/bin/trees`
 You can do `z ezk bi tre` and it should find it.
 
 This would require `~/code/ezkl` to be a remembered path.
+
+It picks the first subdirs that match so it might not work in all cases due to ambiguity.
