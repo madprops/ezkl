@@ -203,7 +203,8 @@ def select_match(matches: MatchList) -> None:
             Paths.forget_path(ans)
             return
         else:
-            print(ans)
+            path = resolve_extra(ans)
+            print(path)
 
 
 def jump() -> None:
