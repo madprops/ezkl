@@ -203,8 +203,7 @@ def select_match(matches: MatchList) -> None:
             Paths.forget_path(ans)
             return
         else:
-            path = resolve_extra(ans)
-            print(path)
+            output(ans)
 
 
 def jump() -> None:
@@ -218,11 +217,14 @@ def jump() -> None:
         if len(matches.items) > 1:
             select_match(matches)
         else:
-            path = matches.first().path
-            path = resolve_extra(path)
-            print(path)
+            output(matches.first().path)
     else:
         info("No path found")
+
+
+def output(path: str) -> None:
+    path = resolve_extra(path)
+    print(path)
 
 
 def resolve_extra(path: str) -> str:
