@@ -54,6 +54,7 @@ class MatchList:
 class Args:
     mode = ""
     keyword = ""
+    cd_extra = ""
 
     @staticmethod
     def get_args() -> None:
@@ -74,6 +75,12 @@ class Args:
             exit(1)
 
         Args.keyword = " ".join(args[1:]) if len(args) > 1 else ""
+
+        cd_split = Args.keyword.split(" cd ")
+
+        if len(cd_split) > 1:
+            Args.keyword = " cd ".join(cd_split[:-1])
+            Args.cd_extra = cd_split[-1]
 
         if Args.mode == "jump" and Args.keyword == "":
             exit(0)
@@ -209,7 +216,12 @@ def jump() -> None:
         if len(matches.items) > 1:
             select_match(matches)
         else:
-            print(matches.first().path)
+            path = matches.first().path
+
+            if Args.cd_extra:
+                path = path + "/" + Args.cd_extra
+
+            print(path)
     else:
         info("No path found")
 

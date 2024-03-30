@@ -28,7 +28,7 @@ function z
 end
 ```
 
-`ezkl forget` can be used to forget the current path. 
+`ezkl forget` can be used to forget the current path.
 
 No argument uses the current dir, or it uses an argument path.
 
@@ -37,3 +37,7 @@ No argument uses the current dir, or it uses an argument path.
 `ezkl list` can be used to list all remembered paths.
 
 If more than one matches are found, rofi is shown to pick one.
+
+You can use `cd` at the end of a jump. For example:
+
+`z code cd ezkl` might go to ~/code/ezkl in a single operation.
