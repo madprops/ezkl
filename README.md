@@ -38,6 +38,14 @@ No argument uses the current dir, or it uses an argument path.
 
 If more than one matches are found, rofi is shown to pick one.
 
-You can use `cd` at the end of a jump. For example:
+## Chains
 
-`z code cd ezkl` might go to ~/code/ezkl in a single operation.
+You can chain using multiple keywords.
+
+The first keyword is the root, which has to be a known path.
+
+The rest of the keywords are subdirs inside of it.
+
+For example say you have the dir `~/code/ezkl/bin/trees`
+
+You can do `z ezk bi tre` and it should find it.
