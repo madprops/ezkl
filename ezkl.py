@@ -215,7 +215,10 @@ def jump() -> None:
 
     if not matches.empty():
         if len(matches.items) > 1:
-            select_match(matches)
+            if (Args.extra[0] == "!"):
+                output(matches.first().path)
+            else:
+                select_match(matches)
         else:
             output(matches.first().path)
     else:
